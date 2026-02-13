@@ -1,7 +1,7 @@
-import { clearSession, getSession, saveSession } from './storage';
-import type { AuthSession, LoginResponse } from './types';
+import { API_BASE_URL } from '@/src/config/env';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? '';
+import type { AuthSession, LoginResponse } from './types';
+import { useAuthStore } from './store';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -23,8 +23,24 @@ export class HttpError extends Error {
     }
 }
 
-// MELHORIA 1: Singleton para evitar race condition no refresh
+// Singleton para evitar race condition no refresh
 let refreshPromise: Promise<boolean> | null = null;
+
+async function readCurrentSession(): Promise<AuthSession | null> {
+    return useAuthStore.getState().session;
+}
+
+function buildAuthSession(parsed: LoginResponse): AuthSession | null {
+    if (!parsed.success || !parsed.accessToken || !parsed.refreshToken || !parsed.user) {
+        return null;
+    }
+
+    return {
+        accessToken: parsed.accessToken,
+        refreshToken: parsed.refreshToken,
+        user: parsed.user,
+    };
+}
 
 export function createHttpClient(baseUrl = API_BASE_URL) {
     async function request<T>(path: string, options: RequestOptions = {}, retry = true): Promise<T> {
@@ -37,8 +53,10 @@ export function createHttpClient(baseUrl = API_BASE_URL) {
         };
 
         if (authEnabled) {
-            const session = await getSession();
-            if (session?.accessToken) headers.Authorization = `Bearer ${session.accessToken}`;
+            const session = await readCurrentSession();
+            if (session?.accessToken) {
+                headers.Authorization = `Bearer ${session.accessToken}`;
+            }
         }
 
         const res = await fetch(`${baseUrl}${path}`, {
@@ -54,11 +72,12 @@ export function createHttpClient(baseUrl = API_BASE_URL) {
         // Se 401 e authEnabled, tenta refresh 1x e refaz
         if (res.status === 401 && authEnabled && retry) {
             const refreshed = await tryRefresh(baseUrl);
+
             if (refreshed) {
                 return request<T>(path, options, false);
             }
-            // refresh falhou => sessão inválida
-            await clearSession();
+
+            await useAuthStore.getState().clearSession();
             throw new HttpError(401, data, 'Unauthorized (refresh failed)');
         }
 
@@ -93,8 +112,10 @@ async function tryRefresh(baseUrl: string): Promise<boolean> {
 
     refreshPromise = (async () => {
         try {
-            const session = await getSession();
-            if (!session?.refreshToken) return false;
+            const session = await readCurrentSession();
+            if (!session?.refreshToken) {
+                return false;
+            }
 
             const res = await fetch(`${baseUrl}/refresh`, {
                 method: 'POST',
@@ -105,22 +126,16 @@ async function tryRefresh(baseUrl: string): Promise<boolean> {
             const rawText = await res.text();
             const data = rawText ? safeJsonParse(rawText) : null;
 
-            if (!res.ok) return false;
-
-            const parsed = data as LoginResponse;
-            
-            // Validação completa da resposta
-            if (!parsed?.success || !parsed?.accessToken || !parsed?.refreshToken || !parsed?.user) {
+            if (!res.ok) {
                 return false;
             }
 
-            const nextSession: AuthSession = {
-                accessToken: parsed.accessToken,
-                refreshToken: parsed.refreshToken,
-                user: parsed.user,
-            };
+            const nextSession = buildAuthSession(data as LoginResponse);
+            if (!nextSession) {
+                return false;
+            }
 
-            await saveSession(nextSession);
+            await useAuthStore.getState().setSession(nextSession);
             return true;
         } catch (error) {
             console.error('Refresh failed:', error);
