@@ -30,7 +30,7 @@ Se a solicitação violar qualquer regra, **recuse e explique o caminho correto*
 |---------------|-----------------------------------|
 | Framework     | Expo SDK 54 + Expo Router         |
 | Linguagem     | TypeScript (strict: true)         |
-| Estilos       | `StyleSheet.create` + tokens      |
+| Estilos       | Tamagui (`styled()` + tokens + themes) |
 | Estado global | Zustand (mínimo: auth + sync)     |
 | Validação     | Zod                               |
 | DB local      | expo-sqlite                       |
@@ -53,8 +53,11 @@ src/
     billing/hooks/          ← faturamento
     client/hooks/           ← clientes
   ui/                       ← componentes visuais reutilizáveis
-    Button/                 ← Button.tsx + Button.styles.ts + Button.types.ts
-    Input/                  ← Input.tsx + Input.styles.ts + Input.types.ts
+    Button/                 ← Button.tsx + Button.types.ts + index.ts
+    Text/                   ← Text.tsx + Text.types.ts + index.ts
+    InputField/             ← InputField.tsx + InputField.types.ts + index.ts
+    Card/                   ← Card.tsx + Card.types.ts + index.ts
+    Badge/                  ← Badge.tsx + Badge.types.ts + index.ts
   styles/                   ← tokens, theme, spacing, typography
   data/
     db/                     ← SQLite init + schema
@@ -113,12 +116,14 @@ Antes de gerar QUALQUER código, verifique se **nenhuma** destas regras é viola
 - ❌ Criar arquivo fora da estrutura definida
 - ❌ Pular camada (ex: UI → Repository sem hook)
 
-### 6.2 Estilos
+### 6.2 Estilos (Tamagui)
+- ❌ `StyleSheet.create` — substituído por Tamagui `styled()`
 - ❌ Objetos inline de `style` (`style={{ margin: 10 }}`)
 - ❌ Lógica dentro do style
 - ❌ Tailwind, NativeWind ou classes CSS
-- ❌ Componente de UI acoplado a biblioteca visual externa
-- ❌ Tokens hardcoded (usar `src/styles/tokens.ts`)
+- ❌ Valores de cor/espaço hardcoded — usar tokens `$token` do Tamagui
+- ❌ Criar arquivo `.styles.ts` — estilos ficam dentro de `styled()` no `.tsx`
+- ❌ Importar de `react-native` o que Tamagui já fornece (View→YStack/XStack, Text→Text, etc.)
 
 ### 6.3 Segurança
 - ❌ Token em AsyncStorage, state ou variável global
@@ -149,7 +154,7 @@ Todo código gerado **DEVE**:
 - [ ] Ser código final e funcional (nunca pseudo-código)
 - [ ] Seguir a estrutura de pastas exata
 - [ ] Componente funcional, tipado, com props explícitas
-- [ ] Estilos via `StyleSheet.create` em arquivo `.styles.ts` separado
+- [ ] Estilos via Tamagui `styled()` com tokens `$token` (nunca StyleSheet.create)
 - [ ] Types em arquivo `.types.ts` separado
 - [ ] Validar inputs com Zod antes de persistir
 - [ ] Gerar evento na Outbox para todo write
@@ -158,22 +163,41 @@ Todo código gerado **DEVE**:
 
 ---
 
-## 8. PADRÃO DE COMPONENTE UI
+## 8. PADRÃO DE COMPONENTE UI (Tamagui)
 
 ```
 src/ui/<Nome>/
-  <Nome>.tsx          ← componente (memo, funcional, props explícitas)
-  <Nome>.styles.ts    ← StyleSheet.create usando tokens
-  <Nome>.types.ts     ← interface de props
+  <Nome>.tsx          ← componente com styled() do Tamagui + variantes
+  <Nome>.types.ts     ← interface de props (+ GetProps<typeof Styled>)
   index.ts            ← barrel export
 ```
 
+**NÃO existe mais `.styles.ts`** — estilos ficam em `styled()` dentro do `.tsx`.
+
 Regras para componentes:
+- Usar `styled()` do Tamagui para criar componentes estilizados
+- Tokens via `$token` (ex: `$primary`, `$4`, `$pill`)
+- Variantes via `variants` do `styled()` (ex: `variant: { primary: {...} }`)
 - Receber **tudo** via props
-- Variantes via prop (ex: `variant="primary"`)
 - **Zero** acesso a estado global
 - **Zero** efeitos colaterais
 - **Zero** lógica de negócio
+- **Zero** `StyleSheet.create`
+
+Exemplo mínimo:
+```tsx
+import { styled, Button as TamaguiButton } from 'tamagui';
+
+export const Button = styled(TamaguiButton, {
+  name: 'Button',
+  borderRadius: '$pill',
+  variants: {
+    variant: {
+      primary: { backgroundColor: '$primary', color: '$primaryForeground' },
+    },
+  } as const,
+});
+```
 
 ---
 
@@ -246,8 +270,8 @@ Antes de entregar, confirme que:
 - [ ] Writes geram evento na Outbox
 - [ ] Sync Engine é o único que envia para a API externa
 - [ ] Zustand só tem estado global necessário
-- [ ] Estilos via StyleSheet com tokens
-- [ ] Sem inline styles
+- [ ] Estilos via Tamagui styled() com tokens $token
+- [ ] Sem inline styles, sem StyleSheet.create
 - [ ] Imports completos
 - [ ] Código final funcional
 
@@ -263,7 +287,7 @@ Recuse educadamente e aponte a alternativa correta quando pedirem:
 | "Usa Context pra guardar lista de sessões" | Não. Dados mutáveis ficam em hook local. Zustand só para auth/sync. |
 | "Salva o token no AsyncStorage" | Não. Token apenas em SecureStore. |
 | "Faz um fetch direto da tela" | Não. Tela chama hook → hook chama repository → repository usa outbox. |
-| "Cria um estilo inline rápido" | Não. StyleSheet.create em arquivo .styles.ts com tokens. |
+| "Cria um estilo inline rápido" | Não. Use Tamagui styled() com tokens $token. Sem StyleSheet.create. |
 | "Pula o hook e chama o repository direto" | Não. O fluxo é UI → Hook → Repository. Sem exceção. |
 | "Cria uma pasta nova em src/" | Não sem justificativa arquitetural. Use a estrutura existente. |
 

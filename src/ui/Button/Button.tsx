@@ -1,0 +1,101 @@
+import React, { memo } from 'react';
+import { styled, Text, XStack } from 'tamagui';
+
+import type { ButtonProps } from './Button.types';
+
+/**
+ * Button — componente de botão com variantes.
+ * Pill shape por padrão (borderRadius = 9999).
+ * Variantes: default, outline, secondary, ghost, destructive.
+ * Compound: ButtonFrame (XStack) + ButtonLabel (Text).
+ */
+const ButtonFrame = styled(XStack, {
+  name: 'ButtonFrame',
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderRadius: 9999,
+  gap: '$2',
+  cursor: 'pointer',
+  pressStyle: { opacity: 0.85 },
+
+  variants: {
+    variant: {
+      default: { background: '$primary' },
+      outline: {
+        background: 'transparent',
+        borderWidth: 1,
+        borderColor: '$borderColor',
+      },
+      secondary: { background: '$secondary' },
+      ghost: {
+        background: 'transparent',
+        pressStyle: { background: '$backgroundPress' },
+      },
+      destructive: { background: '$destructive' },
+    },
+    size: {
+      sm: { height: 32, paddingHorizontal: '$3' },
+      md: { height: 40, paddingHorizontal: '$4' },
+      lg: { height: 48, paddingHorizontal: '$6' },
+    },
+    disabled: {
+      true: { opacity: 0.5, pointerEvents: 'none' },
+    },
+  } as const,
+
+  defaultVariants: {
+    variant: 'default',
+    size: 'md',
+  },
+});
+
+const ButtonLabel = styled(Text, {
+  name: 'ButtonLabel',
+  fontFamily: '$body',
+  fontWeight: '500',
+
+  variants: {
+    variant: {
+      default: { color: '$primaryForeground' },
+      outline: { color: '$color' },
+      secondary: { color: '$secondaryForeground' },
+      ghost: { color: '$primary' },
+      destructive: { color: '$destructiveForeground' },
+    },
+    size: {
+      sm: { fontSize: 13 },
+      md: { fontSize: 14 },
+      lg: { fontSize: 16 },
+    },
+  } as const,
+
+  defaultVariants: {
+    variant: 'default',
+    size: 'md',
+  },
+});
+
+function ButtonComponent({
+  variant = 'default',
+  size = 'md',
+  disabled = false,
+  onPress,
+  children,
+}: ButtonProps) {
+  return (
+    <ButtonFrame
+      variant={variant}
+      size={size}
+      disabled={disabled}
+      onPress={disabled ? undefined : onPress}
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
+    >
+      <ButtonLabel variant={variant} size={size}>
+        {children}
+      </ButtonLabel>
+    </ButtonFrame>
+  );
+}
+
+export const Button = memo(ButtonComponent);

@@ -63,7 +63,7 @@ src/
 - UI acessar DB, repository ou sync
 - Hook conter SQL
 - Repository acessar rede ou renderizar
-- Inline styles, Tailwind, NativeWind
+- StyleSheet.create, inline styles, Tailwind, NativeWind (usar Tamagui styled())
 - Token fora de SecureStore
 - Write sem outbox
 - Ação que depende do servidor para completar
@@ -110,7 +110,7 @@ Antes de responder, confirme internamente:
 - [ ] O arquivo fica no path correto da estrutura?
 - [ ] Imports respeitam direção: UI ← Hook ← Repository ← DB?
 - [ ] Se é write, gera evento na outbox?
-- [ ] Se é estilo, usa StyleSheet.create com tokens?
+- [ ] Se é estilo, usa Tamagui styled() com tokens $token?
 - [ ] Se é estado global, é APENAS auth ou sync em Zustand?
 
 ---

@@ -115,7 +115,7 @@ Feature path: src/features/<nome>/
 - [ ] Tela consome apenas hook (zero import de data/)
 - [ ] Writes geram outbox event
 - [ ] Funciona offline
-- [ ] Estilos via StyleSheet.create com tokens
+- [ ] Estilos via Tamagui styled() com tokens $token
 - [ ] TypeScript strict sem erros
 ```
 

@@ -22,7 +22,7 @@ Este agente atua como **code reviewer** automatizado, focado exclusivamente em:
 - Revisar qualquer arquivo do projeto (front, data, shared)
 - Analisar diffs e changesets
 - Verificar imports entre camadas
-- Verificar padrões de estilo (StyleSheet vs inline)
+- Verificar padrões de estilo (Tamagui styled() vs StyleSheet.create/inline)
 - Verificar presença de outbox em writes
 - Verificar validação Zod antes de persists
 - Verificar uso de SecureStore para tokens
@@ -59,7 +59,7 @@ src/utils/    → pode importar de: (nenhum — é leaf)
 - [ ] Importa apenas de `src/features/`, `src/ui/`, `src/core/`, `src/styles/`?
 - [ ] Zero import de `src/data/`?
 - [ ] Zero SQL?
-- [ ] StyleSheet.create (sem inline)?
+- [ ] Tamagui styled() com tokens $token (sem StyleSheet.create, sem inline)?
 - [ ] FlatList para listas?
 - [ ] Estados cobertos (loading, empty, error, success)?
 
@@ -78,9 +78,9 @@ src/utils/    → pode importar de: (nenhum — é leaf)
 
 **Se é componente UI (src/ui/):**
 - [ ] Zero import de `src/data/`, `src/features/`, `src/core/`?
-- [ ] StyleSheet.create com tokens?
-- [ ] Props tipadas explicitamente?
-- [ ] `React.memo`?
+- [ ] Tamagui styled() com tokens $token (sem StyleSheet.create)?
+- [ ] Props tipadas explicitamente (+ GetProps<typeof Styled>)?
+- [ ] `React.memo` (quando aplicável)?
 - [ ] Zero lógica de negócio?
 
 ---
@@ -136,7 +136,7 @@ Antes de entregar a review:
 - [ ] Verifiquei TODOS os imports do arquivo?
 - [ ] Verifiquei se a camada do arquivo está correta?
 - [ ] Verifiquei se writes geram outbox?
-- [ ] Verifiquei se há inline styles?
+- [ ] Verifiquei se há inline styles ou StyleSheet.create (deveria ser Tamagui styled())?
 - [ ] Verifiquei se há SQL fora de repository?
 - [ ] Verifiquei se há `any` no TypeScript?
 - [ ] Verifiquei se token é acessado via SecureStore?
@@ -212,7 +212,7 @@ Nenhuma.
 |-------------------|-----------|
 | Não verificar imports | SEMPRE verificar cada import contra o mapa |
 | Aprovar "é só um atalho" | Atalhos viram dívida. Regra é regra. |
-| Ignorar inline styles | Verificar todo `style={` no JSX |
+| Ignorar inline styles ou StyleSheet | Verificar por `style={` e `StyleSheet.create` — deve ser Tamagui styled() |
 | Não checar outbox em writes | Todo repo.create/update/delete DEVE ter outbox |
 | Esquecer de checar FlatList vs ScrollView | Listas devem usar FlatList |
 | Focar só em bugs, ignorar arquitetura | Este reviewer é de ARQUITETURA, não de bugs |

@@ -11,7 +11,7 @@ Gerar telas completas para o Expo Router que seguem o padrão:
 - Importam **apenas hooks** de `src/features/`
 - Importam **apenas componentes** de `src/ui/`
 - Gerenciam estados visuais (loading, empty, error, success)
-- Usam `StyleSheet.create` com tokens
+- Usam componentes Tamagui (`styled()` + tokens `$token`) — sem StyleSheet.create
 - Zero acesso a `src/data/`, SQL ou sync
 
 ---
@@ -37,6 +37,7 @@ Gerar telas completas para o Expo Router que seguem o padrão:
 - ❌ Instanciar repositories
 - ❌ Conter lógica de negócio (validação, cálculos de domínio)
 - ❌ Inline styles (`style={{ ... }}`)
+- ❌ `StyleSheet.create` (usar Tamagui `styled()` + tokens `$token`)
 - ❌ ScrollView para listas longas (usar FlatList)
 - ❌ Funções inline pesadas no render
 
@@ -45,7 +46,7 @@ Gerar telas completas para o Expo Router que seguem o padrão:
 ## 4. Regras do Projeto que Deve Obedecer
 
 - Fluxo: **Tela → Hook → Repository → SQLite** (tela só conhece o hook)
-- Estilos via `StyleSheet.create` no final do arquivo ou em arquivo `.styles.ts`
+- Estilos via Tamagui `styled()` com tokens `$token` (sem StyleSheet.create, sem .styles.ts)
 - FlatList obrigatório para listas
 - Estados visuais cobertos: loading, empty, error, success
 - TypeScript strict (sem `any`)
@@ -94,7 +95,7 @@ Tipo: Lista | Detalhe | Formulário | Modal
 //    - Chama hook
 //    - Handlers com useCallback
 //    - Render condicional por estado
-// 3. StyleSheet.create no final
+// 3. Usa Tamagui styled() + tokens $token (sem StyleSheet.create)
 ```
 
 ---
@@ -106,7 +107,7 @@ Antes de entregar a tela:
 - [ ] Tela só importa de `src/features/**/hooks/` e `src/ui/`?
 - [ ] Zero import de `src/data/`?
 - [ ] Zero SQL ou acesso direto a DB?
-- [ ] `StyleSheet.create` usado (sem inline styles)?
+- [ ] Tamagui `styled()` com tokens `$token` (sem StyleSheet.create, sem inline)?
 - [ ] Tokens de `src/styles/` para valores visuais?
 - [ ] FlatList para listas (não ScrollView)?
 - [ ] Estados cobertos: loading, empty, error, success?
@@ -166,7 +167,7 @@ import { Button } from '@/src/ui/Button';
 | Importar repository na tela | Tela só importa hooks de features |
 | `import { getDb } from` na tela | Nunca. DB só existe em repository |
 | ScrollView para lista de clientes | FlatList obrigatório para listas |
-| `style={{ marginTop: 10 }}` | StyleSheet.create com tokens |
+| `style={{ marginTop: 10 }}` | Tamagui styled() com tokens $token |
 | Esquecer estado de empty/error | Sempre cobrir os 4 estados |
 | Handler inline pesado no render | Extrair com useCallback |
 | `fetch()` direto na tela | Tela chama hook → hook chama repository |
