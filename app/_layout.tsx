@@ -5,7 +5,8 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { initDb } from '@/src/db/initDb';
+import { initDb } from '@/src/data/db/initDb';
+import { useAuthBootstrap } from '@/src/features/auth/useAuthBootstrap';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -13,6 +14,7 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  useAuthBootstrap();
 
   useEffect(() => {
     (async () => {
