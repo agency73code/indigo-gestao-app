@@ -11,6 +11,7 @@ import { Sora_300Light, Sora_400Regular } from '@expo-google-fonts/sora';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { initDb } from '@/src/data/db/initDb';
+import { useAuthBootstrap } from '@/src/features/auth/useAuthBootstrap';
 import { tamaguiConfig } from '@/src/styles/tamagui.config';
 
 SplashScreen.preventAutoHideAsync();
@@ -21,6 +22,7 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  useAuthBootstrap();
 
   const [fontsLoaded] = useFonts({
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),

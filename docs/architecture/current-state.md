@@ -1,7 +1,7 @@
 # Estado Atual do Projeto — Gestão Índigo
 
-> Atualizado em: 2025-07-14
-> Commit base: pós-migração Tamagui
+> Atualizado em: 2026-02-13
+> Commit base: pós-migração Tamagui + auth bootstrap
 
 ---
 
@@ -16,8 +16,9 @@
 | New Architecture | ✅ Habilitada |
 | Tamagui | 2.0.0-rc.12 (ativo) |
 | StyleSheet.create | ❌ Deprecado — não usar |
+| Auth | ✅ Implementada (login, logout, refresh, SecureStore) |
 | Offline-first | Arquitetura definida, implementação pendente |
-| Backend | API externa (repo separado) |
+| Backend | API externa (repo separado) — httpClient conectado |
 
 ---
 
@@ -93,10 +94,20 @@ Regra: headings usam peso 300-400 (light). **Nunca bold para títulos.**
 
 ## 8. Features (Domínio)
 
-Todas as features estão **vazias** (apenas estrutura de pastas):
+### Auth (✅ Implementada)
+| Arquivo | Propósito |
+|---------|-----------|
+| `src/features/auth/types.ts` | `AuthUser`, `AuthSession`, `LoginPayload`, `LoginResponse` |
+| `src/features/auth/storage.ts` | SecureStore: save/get/clear session (`auth_session_v1`) |
+| `src/features/auth/store.ts` | Zustand: status, session, bootstrap, setSession, clearSession, logout |
+| `src/features/auth/httpClient.ts` | HTTP client com auto-refresh de token + race condition protection |
+| `src/features/auth/authService.ts` | `login()`, `logout()`, `me()`, `validateSession()` |
+| `src/features/auth/useAuthBootstrap.ts` | Hook que restaura sessão do SecureStore no app mount |
+| `src/config/env.ts` | Valida `EXPO_PUBLIC_API_BASE_URL` do `.env` |
+| `src/__debug__/testLogin.ts` | Script de teste manual de login |
 
+### Vazias (estrutura de pastas apenas)
 - `src/features/session/hooks/` — sessões clínicas
-- `src/features/auth/hooks/` — autenticação
 - `src/features/billing/hooks/` — faturamento
 - `src/features/client/hooks/` — clientes
 
@@ -104,8 +115,8 @@ Todas as features estão **vazias** (apenas estrutura de pastas):
 
 ## 9. Data Layer
 
-- `src/data/db/initDb.ts` — placeholder minimal (getDb + PRAGMA + WAL)
-- `src/data/db/schema.ts` — existe, precisa de implementação
+- `src/data/db/initDb.ts` — `getDb()` + `initDb()` que executa `SCHEMA_SQL`
+- `src/data/db/schema.ts` — Schema SQL real: tabelas `terapeuta` + `cliente` + índice `idx_cliente_nome`
 - `src/data/repositories/` — vazio
 - `src/data/sync/` — vazio (outbox + sync engine)
 - `src/data/models/` — vazio
@@ -115,9 +126,11 @@ Todas as features estão **vazias** (apenas estrutura de pastas):
 
 ## 10. Próximos Passos
 
-1. Implementar schema SQL completo (`src/data/db/schema.ts`)
-2. Criar Zod schemas em `src/shared/`
-3. Implementar primeiro repository com outbox
-4. Criar sync engine
-5. Implementar feature completa (ex: clientes)
-6. Criar telas no Expo Router consumindo hooks
+1. ~~Implementar schema SQL~~ ✅ (terapeuta + cliente)
+2. ~~Auth bootstrap~~ ✅ (login/logout/refresh/SecureStore)
+3. Criar Zod schemas em `src/shared/` (para validação de inputs)
+4. Implementar primeiro repository com outbox (ex: ClienteRepository)
+5. Criar sync engine (`src/data/sync/`)
+6. Implementar feature completa (ex: clientes — CRUD + tela)
+7. Tela de login consumindo authService
+8. Criar telas no Expo Router consumindo hooks

@@ -84,3 +84,37 @@ Novas pastas na raiz de `src/` só com justificativa arquitetural explícita e a
 ### Consequências
 - Agentes recusam criar pastas fora da estrutura
 - Anti-duplicação ativa (§16)
+
+---
+
+## DECISION-004: Auth Bootstrap — Login, Refresh, SecureStore
+
+**Data:** 2026-02-13
+**Status:** ✅ Implementada
+**Autor:** Backend (repo externo, mergeado no front)
+
+### Contexto
+O backend subiu a primeira integração real com a API externa: autenticação completa
+incluindo login, logout, refresh de token, e persistência via SecureStore.
+
+### Decisão
+Implementar auth diretamente em `src/features/auth/` com:
+- **Zustand store** (`store.ts`): status (`loading`/`authenticated`/`unauthenticated`), session, bootstrap
+- **SecureStore** (`storage.ts`): persistência segura da sessão (chave `auth_session_v1`)
+- **httpClient** (`httpClient.ts`): HTTP client genérico com auto-refresh de token (singleton pattern para race condition)
+- **authService** (`authService.ts`): `login()`, `logout()`, `me()`, `validateSession()`
+- **useAuthBootstrap** (`useAuthBootstrap.ts`): hook que restaura sessão no mount do app
+- **env** (`src/config/env.ts`): validação de `EXPO_PUBLIC_API_BASE_URL`
+- **Schema SQL** (`src/data/db/schema.ts`): tabelas `terapeuta` + `cliente`
+
+### Consequências
+- `app/_layout.tsx` chama `useAuthBootstrap()` no mount
+- `initDb()` agora executa `SCHEMA_SQL` (não mais placeholder com PRAGMA)
+- httpClient faz fetch direto para a API (exceção à regra de outbox, justificada: auth é síncrono e não pode ser offline)
+- Token armazenado **exclusivamente** via SecureStore (§6.3 cumprida)
+- Zustand usado apenas para auth state (§5 OK — escopo mínimo)
+
+### Nota arquitetural
+O auth é a **única feature que acessa a rede diretamente** via httpClient.
+Features de domínio (clientes, sessões, billing) devem seguir o outbox pattern:
+`Hook → Repository → SQLite + Outbox → Sync Engine → API`

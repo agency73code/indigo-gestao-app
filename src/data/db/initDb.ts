@@ -1,5 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 
+import { SCHEMA_SQL } from './schema';
+
 export type Db = SQLite.SQLiteDatabase;
 
 let db: Db | null = null;
@@ -11,14 +13,7 @@ export async function getDb(): Promise<Db> {
   return db;
 }
 
-/**
- * Inicializa o banco SQLite local.
- * Schema será expandido conforme features forem implementadas.
- */
 export async function initDb(): Promise<void> {
   const database = await getDb();
-  await database.execAsync(`
-    PRAGMA foreign_keys = ON;
-    PRAGMA journal_mode = WAL;
-  `);
+  await database.execAsync(SCHEMA_SQL);
 }
