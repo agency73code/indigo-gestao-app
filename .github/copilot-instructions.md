@@ -62,11 +62,6 @@ src/
     sync/                   ← outbox + sync engine
     models/                 ← domain models + zod schemas
     mappers/                ← conversões row ↔ domain
-  backend/                  ← código Node/Prisma (ISOLADO do front)
-    prisma/
-    routes/
-    services/
-    middleware/
   shared/                   ← contratos tipados (zod schemas compartilhados)
   utils/                    ← helpers puros, sem side effects
 ```
