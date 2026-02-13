@@ -8,7 +8,7 @@
 ## Regras adicionadas
 
 1. **Auto-análise obrigatória** — analisar estado atual antes de qualquer resposta
-2. **Backend somente leitura** — sem modificação exceto com permissão explícita
+2. **Backend não existe neste projeto** — é API externa (repo separado)
 3. **Anti-duplicação** — verificar existência antes de criar, nunca gerar v2/copy
 4. **Referência cruzada** — respeitar decisions-log, current-state, contracts
 5. **Modo evolutivo** — adaptar automaticamente quando stack mudar

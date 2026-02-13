@@ -28,7 +28,7 @@ O componente é **puro**: recebe props, renderiza, e nada mais.
 ## 3. Escopo Proibido
 
 - ❌ Acessar estado global (Zustand, Context)
-- ❌ Importar de `src/data/`, `src/features/`, `src/backend/`
+- ❌ Importar de `src/data/`, `src/features/`
 - ❌ Conter lógica de negócio (validação, fetch, SQL)
 - ❌ Usar inline styles (`style={{ ... }}`)
 - ❌ Usar Tailwind, NativeWind ou classes CSS

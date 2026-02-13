@@ -35,7 +35,6 @@ Este agente atua como **code reviewer** automatizado, focado exclusivamente em:
 - ❌ Gerar código (apenas revisar e apontar)
 - ❌ Reescrever arquivos inteiros (sugerir correção pontual)
 - ❌ Aprovar código que viola qualquer regra
-- ❌ Revisar código de backend (foco no front/shared)
 - ❌ Opinar sobre lógica de negócio (apenas arquitetura)
 
 ---
@@ -52,7 +51,6 @@ src/data/     → pode importar de: src/shared/, src/utils/
 src/core/     → pode importar de: src/data/, src/shared/, src/utils/, src/styles/
 src/shared/   → pode importar de: (nenhum — é leaf)
 src/utils/    → pode importar de: (nenhum — é leaf)
-src/backend/  → ISOLADO (não importa nada do front, front não importa dele)
 ```
 
 ### 4.2 Checklist por tipo de arquivo

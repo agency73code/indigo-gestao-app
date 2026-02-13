@@ -20,7 +20,7 @@ Se a solicitação violar qualquer regra, **recuse e explique o caminho correto*
 - Clínica terapêutica: registra sessões, trials, faturamento, clientes
 - **Offline-first obrigatório** — funciona sem internet
 - SQLite local + outbox pattern para sync posterior
-- Backend Node + Prisma (isolado em `src/backend/`)
+- Backend é uma **API externa** (repo separado) — não existe neste projeto
 
 ---
 
@@ -36,7 +36,7 @@ Se a solicitação violar qualquer regra, **recuse e explique o caminho correto*
 | DB local      | expo-sqlite                       |
 | Segurança     | expo-secure-store (tokens)        |
 | IDs           | uuid v4                           |
-| Backend       | Node + Prisma (isolado)           |
+| Backend       | API externa (repo separado)       |
 
 ---
 
@@ -62,11 +62,6 @@ src/
     sync/                   ← outbox + sync engine
     models/                 ← domain models + zod schemas
     mappers/                ← conversões row ↔ domain
-  backend/                  ← código Node/Prisma (ISOLADO do front)
-    prisma/
-    routes/
-    services/
-    middleware/
   shared/                   ← contratos tipados (zod schemas compartilhados)
   utils/                    ← helpers puros, sem side effects
 ```
@@ -88,7 +83,7 @@ UI  →  Hook  →  Repository  →  SQLite
                      ↓
                   Outbox (para writes)
                      ↓
-               Sync Engine  →  Backend
+               Sync Engine  →  API externa
 ```
 
 ### O que cada camada FAZ e NÃO FAZ
@@ -100,7 +95,7 @@ UI  →  Hook  →  Repository  →  SQLite
 | **Repository** (`src/data/repositories/`) | Executa SQL, converte via mapper, enfileira na outbox | Renderiza, controla loading, acessa rede |
 | **SQLite** (`src/data/db/`) | Armazena dados offline | É acessado pela UI |
 | **Outbox** (`src/data/sync/`) | Guarda eventos pendentes de sync | Envia direto ao backend |
-| **Sync Engine** (`src/data/sync/`) | Drena outbox, envia ao backend, marca synced | É chamado pela UI |
+| **Sync Engine** (`src/data/sync/`) | Drena outbox, envia à API externa, marca synced | É chamado pela UI |
 | **Zustand** (`src/core/stores/`) | Guarda estado global mínimo (auth, sync status) | Guarda dados de domínio, listas, cache |
 
 ---
@@ -112,12 +107,9 @@ Antes de gerar QUALQUER código, verifique se **nenhuma** destas regras é viola
 ### 6.1 Arquitetura
 - ❌ UI acessar SQLite ou repository diretamente
 - ❌ UI importar de `src/data/`
-- ❌ UI importar de `src/backend/`
 - ❌ UI chamar sync engine diretamente
 - ❌ Hook conter SQL raw
 - ❌ Repository renderizar ou controlar estado de UI
-- ❌ Frontend importar de `src/backend/`
-- ❌ Backend importar de `src/ui/`, `src/features/`, `src/core/`
 - ❌ Criar arquivo fora da estrutura definida
 - ❌ Pular camada (ex: UI → Repository sem hook)
 
@@ -252,7 +244,7 @@ Antes de entregar, confirme que:
 - [ ] Hook controla loading/erro
 - [ ] Repository contém SQL + mappers
 - [ ] Writes geram evento na Outbox
-- [ ] Sync Engine é o único que envia para o backend
+- [ ] Sync Engine é o único que envia para a API externa
 - [ ] Zustand só tem estado global necessário
 - [ ] Estilos via StyleSheet com tokens
 - [ ] Sem inline styles
@@ -287,7 +279,7 @@ SQLite     = geladeira (armazenamento offline)
 Outbox     = lista de entregas pendentes
 Sync       = motoboy (envia quando tem internet)
 Zustand    = quadro na parede (info global mínima)
-Backend    = central de distribuição (Prisma/Node, isolado)
+API externa = central de distribuição (repo separado)
 ```
 
 ---
@@ -306,19 +298,22 @@ Se não houver arquivos anexados, assuma **apenas** o que está documentado nest
 
 ---
 
-## 15. BACKEND É SOMENTE LEITURA
+## 15. BACKEND NÃO EXISTE NESTE PROJETO
 
 Regra global e inegociável:
 
-- ❌ Modificar qualquer arquivo em `/src/backend/`
-- ❌ Sugerir alteração estrutural no backend
-- ❌ Gerar código backend
-- ❌ Criar novos arquivos dentro de `/src/backend/`
+- O backend é uma **API externa** hospedada em repositório separado
+- **NÃO** existe pasta `src/backend/` neste projeto
+- ❌ Criar pasta `src/backend/` ou qualquer código de servidor
+- ❌ Gerar rotas, controllers, middleware ou lógica de API
+- ❌ Sugerir alterações no backend
 
-**Única exceção:** o usuário escrever **literalmente** a frase:
-> "Permissão explícita para alterar backend"
+A comunicação com o backend ocorre **exclusivamente** via:
+```
+Repository → Outbox → Sync Engine → API externa
+```
 
-Sem essa frase exata, backend é **somente leitura**.
+O front **nunca** faz fetch direto. Tudo passa pelo outbox pattern.
 
 ---
 

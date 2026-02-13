@@ -12,7 +12,7 @@ Gerar telas completas para o Expo Router que seguem o padrão:
 - Importam **apenas componentes** de `src/ui/`
 - Gerenciam estados visuais (loading, empty, error, success)
 - Usam `StyleSheet.create` com tokens
-- Zero acesso a `src/data/`, `src/backend/`, SQL ou sync
+- Zero acesso a `src/data/`, SQL ou sync
 
 ---
 
@@ -32,7 +32,6 @@ Gerar telas completas para o Expo Router que seguem o padrão:
 ## 3. Escopo Proibido
 
 - ❌ Importar de `src/data/` (repositories, db, sync, mappers, models)
-- ❌ Importar de `src/backend/`
 - ❌ Conter SQL, queries ou acesso direto ao SQLite
 - ❌ Chamar sync engine ou outbox
 - ❌ Instanciar repositories
