@@ -37,7 +37,6 @@ O hook é responsável por:
 - ❌ Importar `getDb` ou acessar SQLite diretamente
 - ❌ Renderizar JSX (hook não é componente)
 - ❌ Importar de `src/ui/` (hook não conhece UI)
-- ❌ Importar de `src/backend/`
 - ❌ Chamar sync engine diretamente
 - ❌ Usar `fetch` direto (comunicação via repository → outbox → sync)
 - ❌ Armazenar token fora de SecureStore

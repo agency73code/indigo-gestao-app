@@ -38,7 +38,7 @@ UI  →  Hook  →  Repository  →  SQLite
                      ↓
                   Outbox (writes)
                      ↓
-               Sync Engine  →  Backend
+               Sync Engine  →  API externa
 ```
 
 ### Estrutura obrigatória
@@ -57,15 +57,12 @@ src/
     mappers/          ← row ↔ domain
   shared/             ← Zod schemas (single source of truth)
   utils/              ← helpers puros
-  backend/            ← Node/Prisma (ISOLADO)
 ```
 
 ### Proibições absolutas
 - UI acessar DB, repository ou sync
 - Hook conter SQL
 - Repository acessar rede ou renderizar
-- Frontend importar de `src/backend/`
-- Backend importar de front (`src/ui/`, `src/features/`, `src/core/`)
 - Inline styles, Tailwind, NativeWind
 - Token fora de SecureStore
 - Write sem outbox

@@ -31,7 +31,7 @@ Este documento serve como **plano de execução** para os demais agentes (UI Kit
 - ❌ Gerar código de implementação (apenas especificar)
 - ❌ Alterar a arquitetura ou estrutura de pastas
 - ❌ Propor dependências externas sem justificativa
-- ❌ Criar lógica de backend (focar apenas no front)
+- ❌ Criar lógica de backend (backend é API externa, repo separado)
 - ❌ Pular camadas no fluxo (ex: tela direto no repository)
 
 ---
@@ -270,6 +270,6 @@ Feature path: src/features/session/
 | Spec sem outbox events | Sempre listar. Todo write gera outbox. |
 | Spec sem estados de UI | Sempre cobrir: loading, empty, error, success. |
 | Schema Zod não definido antes do repository | Schema é a primeira coisa da spec. |
-| Misturar lógica de back na spec do front | Spec foca no front. Backend é contrato (schema Zod). |
+| Misturar lógica de back na spec do front | Spec foca no front. Backend é API externa (repo separado). |
 | Tela sem path exato no Expo Router | Sempre especificar rota completa. |
 | Feature que depende do servidor | Toda feature deve funcionar offline. Declarar explicitamente. |
