@@ -16,4 +16,7 @@ export async function getDb(): Promise<Db> {
 export async function initDb(): Promise<void> {
   const database = await getDb();
   await database.execAsync(SCHEMA_SQL);
+
+  // garante FK ligado
+  await database.execAsync('PRAGMA foreign_keys = ON;');
 }

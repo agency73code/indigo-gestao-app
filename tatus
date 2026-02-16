@@ -1,0 +1,32 @@
+[33mcommit 7e328a7f42d8757eac413b45e220a25bd9e1fa5c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: bb059d8 306f0c7
+Author: Natan Gomes <natantatan2000@gmail.com>
+Date:   Fri Feb 13 18:07:07 2026 -0300
+
+    merge: integrate backend auth + update architecture docs
+    
+    Merge remote auth implementation (login, logout, refresh, SecureStore)
+    
+    Resolve conflicts: keep backend initDb (SCHEMA_SQL) + our Tamagui layout
+    
+    Update current-state.md and decisions-log.md (DECISION-004: Auth Bootstrap)
+    
+    TypeScript strict: zero errors
+
+ .env.example                          |   1 [32m+[m
+ app.json                              |   3 [32m+[m[31m-[m
+ app/_layout.tsx                       |   2 [32m+[m
+ docs/architecture/current-state.md    |  41 [32m++++++[m[31m---[m
+ docs/architecture/decisions-log.md    |  34 [32m++++++++[m
+ pnpm-workspace.yaml                   |   3 [32m+[m
+ src/__debug__/testLogin.ts            |  33 [32m+++++++[m
+ src/config/env.ts                     |  37 [32m++++++++[m
+ src/data/db/initDb.ts                 |  11 [32m+[m[31m--[m
+ src/data/db/schema.ts                 |  21 [32m+++++[m
+ src/features/auth/authService.ts      |  57 [32m++++++++++++[m
+ src/features/auth/httpClient.ts       | 158 [32m++++++++++++++++++++++++++++++++++[m
+ src/features/auth/storage.ts          |  24 [32m++++++[m
+ src/features/auth/store.ts            |  55 [32m++++++++++++[m
+ src/features/auth/types.ts            |  28 [32m++++++[m
+ src/features/auth/useAuthBootstrap.ts |  10 [32m+++[m
+ 16 files changed, 495 insertions(+), 23 deletions(-)
