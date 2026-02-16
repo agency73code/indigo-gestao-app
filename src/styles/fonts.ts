@@ -3,24 +3,45 @@ import { createFont } from 'tamagui';
 
 /**
  * Fontes do projeto Gestão Índigo.
- * - Body / Labels: Inter (peso 400–600)
+ *
+ * - Body / Labels: DM Sans (peso 400–600)
+ *   TODO: instalar @expo-google-fonts/dm-sans e trocar createInterFont → createFont DM Sans.
+ *   Enquanto isso, Inter substitui temporariamente com a mesma escala.
+ *
  * - Headings / Card titles: Sora (peso 300–400, nunca bold)
+ *
+ * Escala tipográfica (font size ↔ token):
+ *   $1:12  $2:14  $3:16  $4:18  $5:20  $6:24  $7:28  $8:32  $9:36  true:16
+ *
+ * Escala de line-height:
+ *   $1:16  $2:20  $3:22  $4:24  $5:28  $6:32  $7:36  $8:40  $9:44  true:22
  */
 
-// ── Inter (body) ──────────────────────────────────
-export const interFont = createInterFont({
+// ── Body font (Inter temporário → DM Sans futuro) ────────────
+export const bodyFont = createInterFont({
   size: {
-    1: 11,
-    2: 12,
-    3: 13,
-    4: 14,
-    5: 16,
-    6: 18,
-    7: 20,
-    8: 24,
-    9: 30,
-    10: 36,
-    true: 14,
+    1: 12,
+    2: 14,
+    3: 16,
+    4: 18,
+    5: 20,
+    6: 24,
+    7: 28,
+    8: 32,
+    9: 36,
+    true: 16,
+  },
+  lineHeight: {
+    1: 16,
+    2: 20,
+    3: 22,
+    4: 24,
+    5: 28,
+    6: 32,
+    7: 36,
+    8: 40,
+    9: 44,
+    true: 22,
   },
   weight: {
     1: '300',
@@ -40,35 +61,36 @@ export const interFont = createInterFont({
   },
 });
 
+/** @deprecated Use bodyFont. Alias mantido por compatibilidade. */
+export const interFont = bodyFont;
+
 // ── Sora (headings) ──────────────────────────────
-// Loaded via @expo-google-fonts/sora in app/_layout.tsx
+// Carregada via @expo-google-fonts/sora em app/_layout.tsx
 export const soraFont = createFont({
   family: 'Sora',
   size: {
-    1: 11,
-    2: 12,
-    3: 13,
-    4: 14,
-    5: 16,
-    6: 18,
-    7: 20,
-    8: 24,
-    9: 30,
-    10: 36,
+    1: 12,
+    2: 14,
+    3: 16,
+    4: 18,
+    5: 20,
+    6: 24,
+    7: 28,
+    8: 32,
+    9: 36,
     true: 20,
   },
   lineHeight: {
     1: 16,
-    2: 18,
-    3: 20,
-    4: 22,
-    5: 24,
-    6: 28,
-    7: 30,
-    8: 36,
-    9: 42,
-    10: 48,
-    true: 30,
+    2: 20,
+    3: 22,
+    4: 24,
+    5: 28,
+    6: 32,
+    7: 36,
+    8: 40,
+    9: 44,
+    true: 28,
   },
   weight: {
     3: '300',

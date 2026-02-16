@@ -1,7 +1,7 @@
 # Estado Atual do Projeto — Gestão Índigo
 
-> Atualizado em: 2026-02-13
-> Commit base: pós-migração Tamagui + auth bootstrap
+> Atualizado em: 2026-02-14
+> Commit base: pós-migração Tamagui + auth screens completas + splash animation
 
 ---
 
@@ -17,8 +17,12 @@
 | Tamagui | 2.0.0-rc.12 (ativo) |
 | StyleSheet.create | ❌ Deprecado — não usar |
 | Auth | ✅ Implementada (login, logout, refresh, SecureStore) |
+| Auth Screens | ✅ 5 telas (login, forgot-password, email-sent, reset-password, success) |
+| Auth Hooks | ✅ useLogin, useForgotPassword, useResetPassword |
+| Splash Animation | ✅ react-native-reanimated custom overlay |
 | Offline-first | Arquitetura definida, implementação pendente |
 | Backend | API externa (repo separado) — httpClient conectado |
+| Dark Mode | ❌ Forçado light — Figma dark não existe ainda |
 
 ---
 
@@ -52,13 +56,24 @@
 | Componente | Path | Variantes |
 |------------|------|-----------|
 | **Button** | `src/ui/Button/` | default, outline, secondary, ghost, destructive + sizes sm/md/lg |
-| **Card** | `src/ui/Card/` | padding: none, sm, md, lg |
+| **Card** | `src/ui/Card/` | Simplificado: bg #FFFFFF, borderRadius $5, padding $6, sem variantes de padding |
 | **AppText** | `src/ui/Text/` | pageTitle, cardTitle, label, body, muted |
-| **InputField** | `src/ui/InputField/` | label + error states |
+| **InputField** | `src/ui/InputField/` | label + error states + rightElement (password toggle) |
 | **Badge** | `src/ui/Badge/` | default, secondary, destructive, outline, success |
+| **SplashAnimated** | `src/ui/SplashAnimated/` | Animação de splash: logo fade-in → card slide-up → fade-out |
 
 Padrão por componente: 3 arquivos (`<Nome>.tsx` + `<Nome>.types.ts` + `index.ts`).
 **Não existe mais `.styles.ts`** — estilos ficam em `styled()` dentro do `.tsx`.
+**SplashAnimated** usa StyleSheet (exceção documentada — renderiza antes do TamaguiProvider).
+
+### Regras de UI (CONGELADO)
+
+- **Inventário oficial**: `docs/ui-kit/ui-inventory.md`
+- **NÃO criar** novo componente UI sem aprovação explícita do usuário.
+- **NÃO duplicar**: sem `Button2`, `NewButton`, `LoginButton`, etc.
+- **NÃO criar UI dentro de features** (`src/features/`) ou telas (`app/`).
+- Preferir **extensão incremental** (adicionar variant/prop) sobre criação.
+- Telas consomem `src/ui/*` como primeira opção. Primitivos Tamagui apenas para layout.
 
 ---
 
@@ -71,40 +86,68 @@ Padrão por componente: 3 arquivos (`<Nome>.tsx` + `<Nome>.types.ts` + `index.ts
 
 Regra: headings usam peso 300-400 (light). **Nunca bold para títulos.**
 
+Font scale (fonts.ts):
+- fontSize: $1=12, $2=14, $3=16, $4=18, $5=20, $6=24, $7=28, $8=32, $9=36
+- lineHeight: $1=16, $2=20, $3=22, $4=24, $5=28, $6=32, $7=36, $8=40, $9=44
+
 ---
 
 ## 6. Tokens Principais
 
-- **Primary**: `$indigo500` (#2B4970)
-- **Radius pill**: `$pill` (9999)
+- **Primary**: `#274160` (Indigo — background das telas, header, botões)
+- **screenBackground**: `#F7FAFC` (light) / `#0D1520` (dark)
+- **Card bg**: `#FFFFFF` hardcoded (Tamagui $card token instável no RC)
+- **Input bg**: `#FAFAFA`
+- **Radius**: `$pill`=9999, `$5`=16 (cards), `$3`=8 (inputs, buttons)
 - **Space default**: `true` = 16px
-- **Size default**: `true` = 44px (altura de botão)
+- **Input/Button height**: 56px (matching)
 - Paleta completa: Indigo (50-900), Slate (50-950), Status (destructive, success, warning)
 
 ---
 
 ## 7. Temas
 
-| Tema | Background | Text | Primary | Card |
-|------|-----------|------|---------|------|
-| **Light** | #FFFFFF | #0F172A | #2B4970 | #FFFFFF |
-| **Dark** | #0F172A | #F8FAFC | #5A80A2 | #1E293B |
+| Tema | Background | screenBackground | Text | Primary | Card |
+|------|-----------|-----------------|------|---------|------|
+| **Light** | #274160 | #F7FAFC | #274160 | #274160 | #FFFFFF |
+| **Dark** | placeholder | #0D1520 | placeholder | #274160 | placeholder |
+
+**Dark mode forçado OFF** (`_layout.tsx: const appTheme = 'light'`).
+Figma dark não existe — não implementar sem aprovação.
 
 ---
 
 ## 8. Features (Domínio)
 
-### Auth (✅ Implementada)
+### Auth (✅ Implementada — Backend-Ready)
 | Arquivo | Propósito |
 |---------|-----------|
 | `src/features/auth/types.ts` | `AuthUser`, `AuthSession`, `LoginPayload`, `LoginResponse` |
 | `src/features/auth/storage.ts` | SecureStore: save/get/clear session (`auth_session_v1`) |
 | `src/features/auth/store.ts` | Zustand: status, session, bootstrap, setSession, clearSession, logout |
 | `src/features/auth/httpClient.ts` | HTTP client com auto-refresh de token + race condition protection |
-| `src/features/auth/authService.ts` | `login()`, `logout()`, `me()`, `validateSession()` |
+| `src/features/auth/authService.ts` | `login()`, `logout()`, `me()`, `validateSession()`, `forgotPassword()`, `resetPassword()` |
 | `src/features/auth/useAuthBootstrap.ts` | Hook que restaura sessão do SecureStore no app mount |
+| `src/features/auth/hooks/useLogin.ts` | Hook de login: Zod validation, loading/error, authService.login |
+| `src/features/auth/hooks/useForgotPassword.ts` | Hook esqueci senha: Zod validation, loading/error, authService.forgotPassword |
+| `src/features/auth/hooks/useResetPassword.ts` | Hook reset senha: Zod validation (min 8 + match), authService.resetPassword |
 | `src/config/env.ts` | Valida `EXPO_PUBLIC_API_BASE_URL` do `.env` |
 | `src/__debug__/testLogin.ts` | Script de teste manual de login |
+
+### Auth Screens (✅ Implementadas)
+| Tela | Rota | Hook | Status |
+|------|------|------|--------|
+| Login | `/(auth)/login` | `useLogin` | ✅ Backend-ready |
+| Esqueci Senha | `/(auth)/forgot-password` | `useForgotPassword` | ✅ Backend-ready |
+| Email Enviado | `/(auth)/email-sent` | — (estática + navegação) | ✅ Pronta |
+| Redefinir Senha | `/(auth)/reset-password` | `useResetPassword` | ✅ Backend-ready |
+| Sucesso | `/(auth)/success` | — (estática + navegação) | ✅ Pronta |
+
+### Splash Animation (✅ Implementada)
+| Arquivo | Propósito |
+|---------|-----------|
+| `src/ui/SplashAnimated/SplashAnimated.tsx` | Animação: logo fade-in → move up → card slide-up → overlay fade-out |
+| `app/_layout.tsx` | Integração: mostra SplashAnimated overlay sobre rotas reais |
 
 ### Vazias (estrutura de pastas apenas)
 - `src/features/session/hooks/` — sessões clínicas
@@ -128,9 +171,11 @@ Regra: headings usam peso 300-400 (light). **Nunca bold para títulos.**
 
 1. ~~Implementar schema SQL~~ ✅ (terapeuta + cliente)
 2. ~~Auth bootstrap~~ ✅ (login/logout/refresh/SecureStore)
-3. Criar Zod schemas em `src/shared/` (para validação de inputs)
-4. Implementar primeiro repository com outbox (ex: ClienteRepository)
-5. Criar sync engine (`src/data/sync/`)
-6. Implementar feature completa (ex: clientes — CRUD + tela)
-7. Tela de login consumindo authService
-8. Criar telas no Expo Router consumindo hooks
+3. ~~Auth screens~~ ✅ (5 telas: login, forgot, email-sent, reset, success)
+4. ~~Auth hooks~~ ✅ (useLogin, useForgotPassword, useResetPassword)
+5. ~~Splash animation~~ ✅ (react-native-reanimated custom overlay)
+6. Criar Zod schemas em `src/shared/` (para validação de inputs de domínio)
+7. Implementar primeiro repository com outbox (ex: ClienteRepository)
+8. Criar sync engine (`src/data/sync/`)
+9. Implementar feature completa (ex: clientes — CRUD + tela)
+10. Dark mode (quando Figma estiver pronto)

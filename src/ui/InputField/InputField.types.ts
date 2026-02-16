@@ -15,4 +15,6 @@ export interface InputFieldProps {
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
   /** Esconder texto (password) */
   secureTextEntry?: boolean;
+  /** Elemento renderizado à direita dentro do input (ex: ícone de toggle senha) */
+  rightElement?: React.ReactNode;
 }

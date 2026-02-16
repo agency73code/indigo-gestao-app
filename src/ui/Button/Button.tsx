@@ -13,30 +13,30 @@ const ButtonFrame = styled(XStack, {
   name: 'ButtonFrame',
   alignItems: 'center',
   justifyContent: 'center',
-  borderRadius: 9999,
+  borderRadius: '$3',
   gap: '$2',
   cursor: 'pointer',
   pressStyle: { opacity: 0.85 },
 
   variants: {
     variant: {
-      default: { background: '$primary' },
+      default: { backgroundColor: '$primary' },
       outline: {
-        background: 'transparent',
+        backgroundColor: 'transparent',
         borderWidth: 1,
         borderColor: '$borderColor',
       },
-      secondary: { background: '$secondary' },
+      secondary: { backgroundColor: '$secondary' },
       ghost: {
-        background: 'transparent',
-        pressStyle: { background: '$backgroundPress' },
+        backgroundColor: 'transparent',
+        pressStyle: { backgroundColor: '$backgroundPress' },
       },
-      destructive: { background: '$destructive' },
+      destructive: { backgroundColor: '$destructive' },
     },
     size: {
       sm: { height: 32, paddingHorizontal: '$3' },
       md: { height: 40, paddingHorizontal: '$4' },
-      lg: { height: 48, paddingHorizontal: '$6' },
+      lg: { height: 56, paddingHorizontal: '$6' },
     },
     disabled: {
       true: { opacity: 0.5, pointerEvents: 'none' },
@@ -63,9 +63,9 @@ const ButtonLabel = styled(Text, {
       destructive: { color: '$destructiveForeground' },
     },
     size: {
-      sm: { fontSize: 13 },
-      md: { fontSize: 14 },
-      lg: { fontSize: 16 },
+      sm: { fontSize: '$1' },  // 12
+      md: { fontSize: '$2' },  // 14
+      lg: { fontSize: '$3' },  // 16
     },
   } as const,
 

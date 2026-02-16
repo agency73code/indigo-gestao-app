@@ -1,123 +1,197 @@
 /**
- * Temas light/dark do projeto Gestão Índigo.
- * Mapeiam cores semânticas (background, primary, muted, etc.)
- * para tokens do palette definidos em tokens.ts.
+ * Temas light/dark do app Gestão Índigo (Mobile).
+ * Figma base: fundo índigo (#274160), card branco, inputs #FAFAFA,
+ * heading Sora, body DM Sans (fonts ficam em fonts.ts).
  *
- * Coerência com o ERP: mesma semântica, adaptada para mobile.
+ * Regra: manter chaves existentes (background/primary/muted/etc)
+ * para não quebrar componentes atuais, mas alinhar valores ao app.
  */
 
+const INDIGO = '#274160';
+const INDIGO_DARK = '#274160'; // pressed
+const WHITE = '#FFFFFF';
+
+const INPUT_BG = '#FAFAFA';
+
+const TEXT_PRIMARY = '#274160';   // títulos/headings no card
+const TEXT_SECONDARY = '#697386'; // texto auxiliar
+const TEXT_INPUT = '#747681';     // texto de input
+const PLACEHOLDER = '#94A3B8';    // placeholder (pode ajustar depois)
+
+const BORDER_INPUT = '#E5E7EB';
+const BORDER_FOCUS = INDIGO;
+const BORDER_ERROR = '#DC2626';
+
+const SUCCESS = '#16A34A';
+const WARNING = '#F59E0B';
+const ERROR = '#DC2626';
+
 export const lightTheme = {
-  // ── Backgrounds ─────────────────────────────
-  background: '#FFFFFF',
-  backgroundHover: '#F8FAFC',
-  backgroundPress: '#F1F5F9',
-  backgroundFocus: '#F1F5F9',
-  backgroundStrong: '#F1F5F9',
+  /**
+   * Background da aplicação:
+   * No design do app, a “tela” tem fundo índigo.
+   * O branco aparece como “card” central.
+   */
+  background: INDIGO,
+  backgroundHover: INDIGO,
+  backgroundPress: INDIGO_DARK,
+  backgroundFocus: INDIGO,
+  backgroundStrong: INDIGO,
   backgroundTransparent: 'transparent',
 
-  // ── Foregrounds ─────────────────────────────
-  color: '#0F172A',
-  colorHover: '#0F172A',
-  colorPress: '#1E293B',
-  colorFocus: '#0F172A',
+  /**
+   * Texto padrão:
+   * No app, textos em superfícies claras (card) usam índigo/cinza, não preto slate.
+   * Para evitar quebrar componentes que usam "color" global, colocamos índigo.
+   */
+  color: TEXT_PRIMARY,
+  colorHover: TEXT_PRIMARY,
+  colorPress: TEXT_PRIMARY,
+  colorFocus: TEXT_PRIMARY,
   colorTransparent: 'transparent',
 
-  // ── Primary (Indigo) ───────────────────────
-  primary: '#2B4970',
-  primaryForeground: '#FFFFFF',
+  /**
+   * Primary:
+   * Botão principal e topo.
+   */
+  primary: INDIGO,
+  primaryForeground: WHITE,
 
-  // ── Secondary ──────────────────────────────
-  secondary: '#F1F5F9',
-  secondaryForeground: '#0F172A',
+  /**
+   * Secondary / Muted / Accent:
+   * No app, essas superfícies são “cinzas claros”.
+   */
+  secondary: INPUT_BG,
+  secondaryForeground: TEXT_PRIMARY,
 
-  // ── Muted ──────────────────────────────────
-  muted: '#F1F5F9',
-  mutedForeground: '#64748B',
+  muted: INPUT_BG,
+  mutedForeground: TEXT_SECONDARY,
 
-  // ── Accent ─────────────────────────────────
-  accent: '#F1F5F9',
-  accentForeground: '#0F172A',
+  accent: INPUT_BG,
+  accentForeground: TEXT_PRIMARY,
 
-  // ── Destructive ────────────────────────────
-  destructive: '#EF4444',
-  destructiveForeground: '#FFFFFF',
+  /**
+   * Destructive / Status
+   */
+  destructive: ERROR,
+  destructiveForeground: WHITE,
 
-  // ── Success / Warning ──────────────────────
-  success: '#22C55E',
-  warning: '#EAB308',
+  success: SUCCESS,
+  warning: WARNING,
 
-  // ── Card ───────────────────────────────────
-  card: '#FFFFFF',
-  cardForeground: '#0F172A',
+  /**
+   * Card:
+   * Superfície branca com textos em índigo/cinza.
+   */
+  card: WHITE,
+  cardForeground: TEXT_PRIMARY,
 
-  // ── Border / Input ─────────────────────────
-  borderColor: '#E2E8F0',
-  borderColorHover: '#CBD5E1',
-  borderColorFocus: '#2B4970',
-  borderColorPress: '#CBD5E1',
-  inputBackground: '#FFFFFF',
-  placeholderColor: '#94A3B8',
+  /**
+   * Border / Input:
+   * Inputs são cinza claro, borda clara, focus índigo.
+   */
+  borderColor: BORDER_INPUT,
+  borderColorHover: BORDER_INPUT,
+  borderColorFocus: BORDER_FOCUS,
+  borderColorPress: BORDER_INPUT,
 
-  // ── Shadow ─────────────────────────────────
+  inputBackground: INPUT_BG,
+  placeholderColor: PLACEHOLDER,
+
+  /**
+   * Tokens extras úteis (NÃO quebram nada):
+   * Alguns componentes preferem usar diretamente.
+   */
+  textPrimary: TEXT_PRIMARY,
+  textSecondary: TEXT_SECONDARY,
+  textInput: TEXT_INPUT,
+  textButtonPrimary: WHITE,
+
+  buttonPrimary: INDIGO,
+  buttonPrimaryPressed: INDIGO_DARK,
+  buttonDisabled: BORDER_INPUT,
+
+  borderError: BORDER_ERROR,
+  statusError: ERROR,
+  statusSuccess: SUCCESS,
+  statusWarning: WARNING,
+
+  /**
+   * Shadow:
+   * Card tem sombra suave.
+   */
+  screenBackground: '#F7FAFC',
+
   shadowColor: 'rgba(0,0,0,0.08)',
   shadowColorHover: 'rgba(0,0,0,0.12)',
 };
 
 export const darkTheme: typeof lightTheme = {
-  // ── Backgrounds ─────────────────────────────
-  background: '#0F172A',
-  backgroundHover: '#1E293B',
-  backgroundPress: '#334155',
-  backgroundFocus: '#1E293B',
-  backgroundStrong: '#1E293B',
+  /**
+   * Se você ainda não desenhou dark no Figma,
+   * NÃO inventa um tema “slate completo”.
+   * Faz um dark mínimo coerente com a marca:
+   */
+  background: '#0B1220',
+  backgroundHover: '#0B1220',
+  backgroundPress: '#0E172A',
+  backgroundFocus: '#0B1220',
+  backgroundStrong: '#0B1220',
   backgroundTransparent: 'transparent',
 
-  // ── Foregrounds ─────────────────────────────
-  color: '#F8FAFC',
-  colorHover: '#F8FAFC',
-  colorPress: '#E2E8F0',
-  colorFocus: '#F8FAFC',
+  color: '#E6EEF7',
+  colorHover: '#E6EEF7',
+  colorPress: '#E6EEF7',
+  colorFocus: '#E6EEF7',
   colorTransparent: 'transparent',
 
-  // ── Primary (Indigo — lighter for dark theme)
-  primary: '#5A80A2',
-  primaryForeground: '#FFFFFF',
+  primary: '#274160', // indigo mais claro no dark para contraste
+  primaryForeground: '#081018',
 
-  // ── Secondary ──────────────────────────────
-  secondary: '#1E293B',
-  secondaryForeground: '#F8FAFC',
+  secondary: '#111A2B',
+  secondaryForeground: '#E6EEF7',
 
-  // ── Muted ──────────────────────────────────
-  muted: '#1E293B',
-  mutedForeground: '#94A3B8',
+  muted: '#111A2B',
+  mutedForeground: '#A8B3C2',
 
-  // ── Accent ─────────────────────────────────
-  accent: '#1E293B',
-  accentForeground: '#F8FAFC',
+  accent: '#111A2B',
+  accentForeground: '#E6EEF7',
 
-  // ── Destructive ────────────────────────────
-  destructive: '#DC2626',
-  destructiveForeground: '#FFFFFF',
+  destructive: '#EF4444',
+  destructiveForeground: WHITE,
 
-  // ── Success / Warning ──────────────────────
-  success: '#16A34A',
-  warning: '#EAB308',
+  success: '#22C55E',
+  warning: '#F59E0B',
 
-  // ── Card ───────────────────────────────────
-  card: '#1E293B',
-  cardForeground: '#F8FAFC',
+  card: '#0F1A2C',
+  cardForeground: '#E6EEF7',
 
-  // ── Border / Input ─────────────────────────
-  borderColor: '#334155',
-  borderColorHover: '#475569',
+  borderColor: '#1E2A3E',
+  borderColorHover: '#274160',
   borderColorFocus: '#5A80A2',
-  borderColorPress: '#475569',
-  inputBackground: '#1E293B',
-  placeholderColor: '#64748B',
+  borderColorPress: '#274160',
 
-  // ── Shadow ─────────────────────────────────
-  shadowColor: 'rgba(0,0,0,0.3)',
-  shadowColorHover: 'rgba(0,0,0,0.4)',
+  inputBackground: '#111A2B',
+  placeholderColor: '#7B8798',
+
+  textPrimary: '#E6EEF7',
+  textSecondary: '#A8B3C2',
+  textInput: '#E6EEF7',
+  textButtonPrimary: '#081018',
+
+  buttonPrimary: '#274160',
+  buttonPrimaryPressed: '#4C6F8E',
+  buttonDisabled: '#1E2A3E',
+
+  borderError: '#EF4444',
+  statusError: '#EF4444',
+  statusSuccess: '#22C55E',
+  statusWarning: '#F59E0B',
+
+  screenBackground: '#0D1520',
+
+  shadowColor: 'rgba(0,0,0,0.35)',
+  shadowColorHover: 'rgba(0,0,0,0.45)',
 };
 
 export const themes = {

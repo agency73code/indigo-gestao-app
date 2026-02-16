@@ -14,10 +14,26 @@ O componente é **puro**: recebe props, renderiza, e nada mais.
 
 ---
 
-## 2. Escopo Permitido
+## 2. Gate Obrigatório (UI Inventory)
 
-- Criar novos componentes em `src/ui/<Nome>/`
-- Ajustar componentes existentes em `src/ui/`
+**Antes de gerar QUALQUER componente**, o agente DEVE:
+
+1. Consultar `docs/ui-kit/ui-inventory.md`
+2. Verificar se já existe componente equivalente em `src/ui/`
+3. Se existir → propor **extensão incremental** (nova variant/prop), NÃO criar novo
+4. Se não existir → só criar com **aprovação explícita** do usuário
+
+**Proibido em qualquer cenário:**
+- Criar `Button2`, `NewButton`, `LoginButton`, `PrimaryButton`, `CustomCard`, etc.
+- Criar componente UI fora de `src/ui/` (nunca em `src/features/` ou `app/`)
+- Criar wrapper de primitivo Tamagui sem justificativa (ex: `MyYStack`)
+
+---
+
+## 3. Escopo Permitido
+
+- **Estender** componentes existentes em `src/ui/` (adicionar variant, prop, slot)
+- Criar novos componentes em `src/ui/<Nome>/` **somente com aprovação**
 - Gerar arquivos: `<Nome>.tsx`, `<Nome>.types.ts`, `index.ts`
 - Usar Tamagui `styled()` com tokens `$token` (ex: `$primary`, `$4`, `$pill`)
 - Usar primitivos do Tamagui: `YStack`, `XStack`, `Text`, `Button`, `Input`, `Label`
@@ -28,8 +44,11 @@ O componente é **puro**: recebe props, renderiza, e nada mais.
 
 ---
 
-## 3. Escopo Proibido
+## 4. Escopo Proibido
 
+- ❌ Criar componente novo sem consultar `docs/ui-kit/ui-inventory.md`
+- ❌ Criar componente duplicado (variação de nome de um existente)
+- ❌ Criar componente UI fora de `src/ui/`
 - ❌ Acessar estado global (Zustand, Context)
 - ❌ Importar de `src/data/`, `src/features/`
 - ❌ Conter lógica de negócio (validação, fetch, SQL)
@@ -44,7 +63,7 @@ O componente é **puro**: recebe props, renderiza, e nada mais.
 
 ---
 
-## 4. Regras do Projeto que Deve Obedecer
+## 5. Regras do Projeto que Deve Obedecer
 
 - Estilos **sempre** via Tamagui `styled()` com tokens `$token`
 - Tokens definidos em `src/styles/tokens.ts` (createTokens)
@@ -59,19 +78,24 @@ O componente é **puro**: recebe props, renderiza, e nada mais.
 
 ---
 
-## 5. Inputs Esperados
+## 6. Inputs Esperados
 
 O agente recebe pedidos como:
-- "Crie um componente Button com variantes primary, secondary e danger"
-- "Crie um Card com sombra e borda"
-- "Ajuste o InputField para ter estado de erro"
-- "Crie um EmptyState com ícone e texto"
+- "Adicione variante 'warning' ao Badge"
+- "Adicione prop rightIcon ao InputField"
+- "Ajuste o Button para ter size 'xl'"
+- "Crie um EmptyState" ← requer aprovação se não existe
 
-Pode vir da spec (Agent 02) com lista de componentes necessários.
+Pode vir da spec (Agent 02) ou do Screen Builder (Agent 04) solicitando extensão.
+
+**Resposta padrão a pedidos de criação:**
+> "Verificando `ui-inventory.md`... Componente [X] já cobre esse caso via [variant/prop]. Proponho extensão incremental."
+> ou
+> "Verificando `ui-inventory.md`... Nenhum componente cobre esse caso. Solicito aprovação para criar [Nome]."
 
 ---
 
-## 6. Outputs Obrigatórios
+## 7. Outputs Obrigatórios
 
 Sempre gerar **3 arquivos** por componente:
 
@@ -127,10 +151,12 @@ export type { <Nome>Props } from './<Nome>.types';
 
 ---
 
-## 7. Checklist de Qualidade
+## 8. Checklist de Qualidade
 
 Antes de entregar o componente:
 
+- [ ] Consultei `docs/ui-kit/ui-inventory.md`?
+- [ ] Componente equivalente NÃO existe? (ou é extensão aprovada)
 - [ ] Arquivo em `src/ui/<Nome>/`? (3 arquivos: .tsx, .types.ts, index.ts)
 - [ ] Tamagui `styled()` usado? (sem StyleSheet.create, sem .styles.ts)
 - [ ] Tokens via `$token` (ex: `$primary`, `$4`, `$pill`)? (sem valores hardcoded)
@@ -148,7 +174,7 @@ Antes de entregar o componente:
 
 ---
 
-## 8. Padrão de Resposta
+## 9. Padrão de Resposta
 
 Ao gerar um componente:
 
@@ -179,7 +205,7 @@ Path: src/ui/<Nome>/
 
 ---
 
-## 9. Exemplos de Uso
+## 10. Exemplos de Uso
 
 ### Exemplo 1: "Crie um EmptyState"
 
@@ -243,7 +269,7 @@ Ghost: fundo transparente, texto na cor primary, sem borda.
 
 ---
 
-## 10. Falhas Comuns e Como Evitar
+## 11. Falhas Comuns e Como Evitar
 
 | Falha | Prevenção |
 |-------|-----------|
