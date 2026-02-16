@@ -1,6 +1,6 @@
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Redirect, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
@@ -71,14 +71,8 @@ export default function RootLayout() {
   return (
     <TamaguiProvider config={tamaguiConfig} defaultTheme={appTheme}>
       <ThemeProvider value={DefaultTheme}>
-        {/* Redirect BEFORE rendering Stack to avoid flash of wrong screen */}
-        {authStatus === 'unauthenticated' ? (
-          <Redirect href="/(auth)/login" />
-        ) : authStatus === 'authenticated' ? (
-          <Redirect href="/(tabs)" />
-        ) : null}
-
         <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" />
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal', headerShown: true }} />
