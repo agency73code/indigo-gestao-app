@@ -13,6 +13,7 @@ import { initDb } from '@/src/data/db/initDb';
 import { useAuthStore } from '@/src/features/auth/store';
 import { useAuthBootstrap } from '@/src/features/auth/useAuthBootstrap';
 import { tamaguiConfig } from '@/src/styles/tamagui.config';
+import '@/src/styles/tamagui.config.types';
 import { SplashAnimated } from '@/src/ui/SplashAnimated';
 
 SplashScreen.preventAutoHideAsync();
