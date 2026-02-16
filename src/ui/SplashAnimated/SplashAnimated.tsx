@@ -59,6 +59,7 @@ export function SplashAnimated({ onAnimationComplete }: SplashAnimatedProps) {
         }
       }),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const backgroundStyle = useAnimatedStyle(() => {

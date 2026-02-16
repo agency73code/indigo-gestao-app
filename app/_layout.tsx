@@ -9,7 +9,6 @@ import { Spinner, TamaguiProvider, YStack } from 'tamagui';
 
 import { Sora_300Light, Sora_400Regular } from '@expo-google-fonts/sora';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { initDb } from '@/src/data/db/initDb';
 import { useAuthStore } from '@/src/features/auth/store';
 import { useAuthBootstrap } from '@/src/features/auth/useAuthBootstrap';
@@ -19,7 +18,6 @@ import { SplashAnimated } from '@/src/ui/SplashAnimated';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   useAuthBootstrap();
 
   const authStatus = useAuthStore((s) => s.status);

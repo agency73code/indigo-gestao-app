@@ -28,5 +28,6 @@ export type AppConfig = typeof tamaguiConfig;
 
 // Tipagem global para imports de 'tamagui' reconhecerem nossos tokens/temas
 declare module 'tamagui' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface TamaguiCustomConfig extends AppConfig {}
 }
