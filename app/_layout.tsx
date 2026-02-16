@@ -71,18 +71,18 @@ export default function RootLayout() {
   return (
     <TamaguiProvider config={tamaguiConfig} defaultTheme={appTheme}>
       <ThemeProvider value={DefaultTheme}>
+        {/* Redirect BEFORE rendering Stack to avoid flash of wrong screen */}
+        {authStatus === 'unauthenticated' ? (
+          <Redirect href="/(auth)/login" />
+        ) : authStatus === 'authenticated' ? (
+          <Redirect href="/(tabs)" />
+        ) : null}
+
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal', headerShown: true }} />
         </Stack>
-
-        {/* Redirect based on auth status */}
-        {authStatus === 'unauthenticated' ? (
-          <Redirect href="/(auth)/login" />
-        ) : (
-          <Redirect href="/(tabs)" />
-        )}
 
         {/* Animated splash overlay — renders on top of real screens */}
         {showSplash && (
