@@ -190,3 +190,10 @@ Zustand é **APENAS** para estado global mínimo:
 ```
 
 **Nenhuma seta pode ser invertida. Nenhuma camada pode ser pulada.**
+
+---
+
+## Visualização Interativa
+
+Para visualização completa do fluxo offline-first com estados de sincronização, abra:
+📊 [flow-architecture.html](./flow-architecture.html)

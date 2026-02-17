@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arquitetura de Fluxo — Gestão Índigo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #f5f7fa;
+      color: #1a202c;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #274160;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: #64748b;
+      margin-bottom: 2rem;
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: #274160;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #475569;
+    }
+
+    /* Fluxo principal */
+    .flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1.125rem;
+      text-align: center;
+      min-width: 140px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .box.ui {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .box.hook {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .box.repository {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .box.sqlite {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    .box.outbox {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+
+    .box.sync {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      color: #1a202c;
+    }
+
+    .box.api {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      color: #1a202c;
+    }
+
+    .arrow {
+      font-size: 2rem;
+      color: #94a3b8;
+      font-weight: bold;
+    }
+
+    .arrow-down {
+      display: block;
+      text-align: center;
+      font-size: 2rem;
+      color: #94a3b8;
+      margin: 0.5rem 0;
+    }
+
+    /* Grid para fluxo vertical */
+    .vertical-flow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 2rem 0;
+    }
+
+    /* Diagrama completo */
+    .full-diagram {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin: 2rem 0;
+      position: relative;
+    }
+
+    .full-diagram .box {
+      grid-column: span 1;
+    }
+
+    .full-diagram .box.wide {
+      grid-column: span 2;
+    }
+
+    .branch {
+      grid-column: 2 / 4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Estados */
+    .states-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .state-box {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .state-box.draft {
+      border-color: #94a3b8;
+      background: #f1f5f9;
+    }
+
+    .state-box.pending {
+      border-color: #fbbf24;
+      background: #fef3c7;
+    }
+
+    .state-box.syncing {
+      border-color: #60a5fa;
+      background: #dbeafe;
+    }
+
+    .state-box.synced {
+      border-color: #34d399;
+      background: #d1fae5;
+    }
+
+    .state-box.error {
+      border-color: #f87171;
+      background: #fee2e2;
+    }
+
+    .state-label {
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .state-desc {
+      font-size: 0.875rem;
+      color: #64748b;
+    }
+
+    /* Legenda */
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .legend-color {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .legend-text {
+      font-size: 0.875rem;
+    }
+
+    .legend-title {
+      font-weight: 600;
+      color: #1a202c;
+    }
+
+    .legend-desc {
+      color: #64748b;
+    }
+
+    /* Responsivo */
+    @media (max-width: 768px) {
+      .flow {
+        flex-direction: column;
+      }
+
+      .arrow {
+        transform: rotate(90deg);
+      }
+
+      .full-diagram {
+        grid-template-columns: 1fr;
+      }
+
+      .full-diagram .box {
+        grid-column: span 1;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      h2 {
+        font-size: 1.25rem;
+      }
+    }
+
+    /* Nota importante */
+    .warning {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 1rem;
+      border-radius: 4px;
+      margin: 1rem 0;
+      font-size: 0.875rem;
+    }
+
+    .warning strong {
+      color: #92400e;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📐 Arquitetura de Fluxo — Gestão Índigo</h1>
+    <p class="subtitle">Offline-first data flow architecture — Mobile App (React Native + Expo)</p>
+
+    <!-- A LEI -->
+    <div class="section">
+      <h2>🔒 A LEI — Fluxo Obrigatório</h2>
+      <div class="warning">
+        <strong>Nenhuma camada pode ser pulada. Nenhuma seta pode ser invertida.</strong> Este é o fluxo mandatório para TODAS as features de domínio (clientes, sessões, billing).
+      </div>
+      
+      <div class="flow">
+        <div class="box ui">UI<br><small>(app/)</small></div>
+        <span class="arrow">→</span>
+        <div class="box hook">Hook<br><small>(features/)</small></div>
+        <span class="arrow">→</span>
+        <div class="box repository">Repository<br><small>(data/repos/)</small></div>
+        <span class="arrow">→</span>
+        <div class="box sqlite">SQLite<br><small>(data/db/)</small></div>
+      </div>
+
+      <div class="vertical-flow" style="margin-top: 2rem;">
+        <div class="box repository">Repository</div>
+        <span class="arrow-down">↓</span>
+        <div class="box outbox">Outbox<br><small>(writes only)</small></div>
+        <span class="arrow-down">↓</span>
+        <div class="box sync">Sync Engine<br><small>(data/sync/)</small></div>
+        <span class="arrow-down">↓</span>
+        <div class="box api">API Externa<br><small>(repo separado)</small></div>
+      </div>
+    </div>
+
+    <!-- Fluxo Completo -->
+    <div class="section">
+      <h2>🌐 Fluxo Completo (Reads vs Writes)</h2>
+      
+      <h3>📖 Reads (Leitura)</h3>
+      <div class="flow">
+        <div class="box ui">Tela (login.tsx)</div>
+        <span class="arrow">→</span>
+        <div class="box hook">useLogin()</div>
+        <span class="arrow">→</span>
+        <div class="box repository">ClienteRepository</div>
+        <span class="arrow">→</span>
+        <div class="box sqlite">SQLite (cache)</div>
+      </div>
+      <p style="margin-top: 1rem; color: #64748b; font-size: 0.875rem;">
+        ✅ Dados locais retornam imediatamente. Sem dependência de rede.
+      </p>
+
+      <h3 style="margin-top: 2rem;">✍️ Writes (Criação/Edição)</h3>
+      <div class="flow">
+        <div class="box ui">Tela (login.tsx)</div>
+        <span class="arrow">→</span>
+        <div class="box hook">useLogin()</div>
+        <span class="arrow">→</span>
+        <div class="box repository">ClienteRepository</div>
+        <span class="arrow">→</span>
+        <div class="box sqlite">SQLite (persist)</div>
+      </div>
+
+      <div class="vertical-flow" style="margin-top: 1rem;">
+        <div class="box repository">Repository</div>
+        <span class="arrow-down">↓</span>
+        <div class="box outbox">Outbox.enqueue()<br><small>(evento pendente)</small></div>
+        <span class="arrow-down">↓</span>
+        <div class="box sync">Sync Engine<br><small>(drena fila)</small></div>
+        <span class="arrow-down">↓</span>
+        <div class="box api">POST /api/clientes</div>
+      </div>
+      <p style="margin-top: 1rem; color: #64748b; font-size: 0.875rem;">
+        ✅ UI não espera rede. SQLite persiste local. Sync acontece em background.
+      </p>
+    </div>
+
+    <!-- Estados de Sessão -->
+    <div class="section">
+      <h2>🔄 Estados de Sincronização</h2>
+      <p style="margin-bottom: 1.5rem; color: #64748b;">Toda entidade offline passa por estes estados até ser sincronizada com o backend.</p>
+      
+      <div class="states-grid">
+        <div class="state-box draft">
+          <div class="state-label">Draft</div>
+          <div class="state-desc">Recém criado, ainda não salvo</div>
+        </div>
+
+        <div class="state-box pending">
+          <div class="state-label">Pending Sync</div>
+          <div class="state-desc">Salvo local, aguardando sync</div>
+        </div>
+
+        <div class="state-box syncing">
+          <div class="state-label">Syncing</div>
+          <div class="state-desc">Enviando para API externa</div>
+        </div>
+
+        <div class="state-box synced">
+          <div class="state-label">Synced</div>
+          <div class="state-desc">Confirmado pelo backend</div>
+        </div>
+
+        <div class="state-box error">
+          <div class="state-label">Sync Error</div>
+          <div class="state-desc">Falha, aguarda retry</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 2rem; display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <div class="state-box draft" style="width: auto; display: inline-block;">draft</div>
+        <span class="arrow">→</span>
+        <div class="state-box pending" style="width: auto; display: inline-block;">pending_sync</div>
+        <span class="arrow">→</span>
+        <div class="state-box syncing" style="width: auto; display: inline-block;">syncing</div>
+        <span class="arrow">→</span>
+        <div class="state-box synced" style="width: auto; display: inline-block;">synced</div>
+      </div>
+      <p style="margin-top: 1rem; text-align: center; color: #64748b; font-size: 0.875rem;">
+        ⚠️ Se falhar → <span class="state-box error" style="display: inline-block; padding: 0.25rem 0.5rem; margin: 0 0.25rem;">sync_error</span> → retry automático
+      </p>
+    </div>
+
+    <!-- Legenda -->
+    <div class="section">
+      <h2>📚 Legenda das Camadas</h2>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+          <div class="legend-text">
+            <div class="legend-title">UI (app/)</div>
+            <div class="legend-desc">Telas e componentes visuais</div>
+          </div>
+        </div>
+
+        <div class="legend-item">
+          <div class="legend-color" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+          <div class="legend-text">
+            <div class="legend-title">Hook (features/)</div>
+            <div class="legend-desc">Controla loading/erro/ações</div>
+          </div>
+        </div>
+
+        <div class="legend-item">
+          <div class="legend-color" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+          <div class="legend-text">
+            <div class="legend-title">Repository (data/repos/)</div>
+            <div class="legend-desc">Acesso a dados + outbox</div>
+          </div>
+        </div>
+
+        <div class="legend-item">
+          <div class="legend-color" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);"></div>
+          <div class="legend-text">
+            <div class="legend-title">SQLite (data/db/)</div>
+            <div class="legend-desc">Cache local offline-first</div>
+          </div>
+        </div>
+
+        <div class="legend-item">
+          <div class="legend-color" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);"></div>
+          <div class="legend-text">
+            <div class="legend-title">Outbox (data/sync/)</div>
+            <div class="legend-desc">Fila de eventos pendentes</div>
+          </div>
+        </div>
+
+        <div class="legend-item">
+          <div class="legend-color" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);"></div>
+          <div class="legend-text">
+            <div class="legend-title">Sync Engine (data/sync/)</div>
+            <div class="legend-desc">Drena outbox → API</div>
+          </div>
+        </div>
+
+        <div class="legend-item">
+          <div class="legend-color" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);"></div>
+          <div class="legend-text">
+            <div class="legend-title">API Externa</div>
+            <div class="legend-desc">Backend (repo separado)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exceção: Auth -->
+    <div class="section">
+      <h2>⚠️ Exceção: Auth (Decisão 004)</h2>
+      <div class="warning">
+        <strong>Auth é a ÚNICA feature que acessa rede diretamente.</strong> Login/logout/refresh precisam ser síncronos. Todas as demais features de domínio (clientes, sessões, billing) DEVEM seguir o fluxo com Outbox.
+      </div>
+      <div class="flow" style="margin-top: 1rem;">
+        <div class="box ui">LoginScreen</div>
+        <span class="arrow">→</span>
+        <div class="box hook">useLogin()</div>
+        <span class="arrow">→</span>
+        <div class="box api">authService.login()<br><small>(fetch direto)</small></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e2e8f0; color: #94a3b8; font-size: 0.875rem;">
+      <p>Gestão Índigo — Offline-first Mobile Architecture</p>
+      <p style="margin-top: 0.5rem;">Última atualização: Fevereiro 2026</p>
+    </div>
+  </div>
+</body>
+</html>
