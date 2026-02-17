@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import {
@@ -25,6 +25,7 @@ const CURVE_HEIGHT = 50;
  * UI → Hook (useLogin) → authService → API externa.
  */
 export default function LoginScreen() {
+  const router = useRouter();
   const theme = useTheme();
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
     const primaryColor = String(theme.primary?.val ?? '#274160');
@@ -42,7 +43,11 @@ export default function LoginScreen() {
   } = useLogin();
 
   const handleLogin = async () => {
-    await login();
+    const success = await login();
+
+    if (success) {
+      router.replace('/(tabs)');
+    }
   };
 
   return (

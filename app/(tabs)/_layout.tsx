@@ -10,6 +10,7 @@ import { useAuthStore } from '@/src/features/auth/store';
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const status = useAuthStore((s) => s.status);
+  const logout = useAuthStore((s) => s.logout); // TODO: APAGAR
 
   if (status !== 'authenticated') {
     return <Redirect href="/(auth)/login" />;
@@ -36,6 +37,19 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
         }}
       />
+      <Tabs.Screen // TODO: APAGAR
+        name="logout"
+        options={{
+          title: 'Logout',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="rectangle.portrait.and.arrow.right" color={color} />,
+        }}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+            void logout();
+          },
+        }}
+      /> 
     </Tabs>
   );
 }

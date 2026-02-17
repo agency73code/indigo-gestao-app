@@ -10,8 +10,9 @@ import { Spinner, TamaguiProvider, YStack } from 'tamagui';
 import { Sora_300Light, Sora_400Regular } from '@expo-google-fonts/sora';
 
 import { initDb } from '@/src/data/db/initDb';
-import { useAuthStore } from '@/src/features/auth/store';
 import { useAuthBootstrap } from '@/src/features/auth/useAuthBootstrap';
+import { useAuthStore } from '@/src/features/auth/store';
+import { useMobileBootstrap } from '@/src/features/mobile/useMobileBootstrap';
 import { tamaguiConfig } from '@/src/styles/tamagui.config';
 import { SplashAnimated } from '@/src/ui/SplashAnimated';
 
@@ -19,6 +20,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   useAuthBootstrap();
+  useMobileBootstrap();
 
   const authStatus = useAuthStore((s) => s.status);
   const [showSplash, setShowSplash] = useState(true);
@@ -32,14 +34,24 @@ export default function RootLayout() {
     Sora_400Regular,
   });
 
+  // Inicializa DB (sem reset automático)
   useEffect(() => {
+    let cancelled = false;
+
     (async () => {
       try {
         await initDb();
-      } catch (error) {
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error(String(err));
         console.error('Error initializing DB:', error);
+      } finally {
+        if (cancelled) return;
       }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -75,13 +87,14 @@ export default function RootLayout() {
           <Stack.Screen name="index" />
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal', headerShown: true }} />
+          <Stack.Screen
+            name="modal"
+            options={{ presentation: 'modal', title: 'Modal', headerShown: true }}
+          />
         </Stack>
 
         {/* Animated splash overlay — renders on top of real screens */}
-        {showSplash && (
-          <SplashAnimated onAnimationComplete={handleSplashComplete} />
-        )}
+        {showSplash && <SplashAnimated onAnimationComplete={handleSplashComplete} />}
 
         <StatusBar style="auto" />
       </ThemeProvider>
