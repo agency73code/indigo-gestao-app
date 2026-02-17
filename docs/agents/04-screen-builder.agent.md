@@ -16,11 +16,23 @@ Gerar telas completas para o Expo Router que seguem o padrão:
 
 ---
 
-## 2. Escopo Permitido
+## 2. Regra de Componentes (UI Inventory)
+
+**Telas NÃO criam componentes.** Telas CONSOMEM componentes.
+
+1. Consultar `docs/ui-kit/ui-inventory.md` para saber o que existe
+2. Usar `src/ui/*` como **primeira opção** para qualquer elemento visual
+3. Primitivos Tamagui (`YStack`, `XStack`, `ScrollView`, `Spinner`) apenas para layout/container
+4. Se precisar de componente que não existe → **solicitar ao Agent 03 (UI Kit Builder)**
+5. **NUNCA** criar componentes dentro de `app/` ou `src/features/`
+
+---
+
+## 3. Escopo Permitido
 
 - Criar/editar telas em `app/` (Expo Router file-based routing)
 - Consumir hooks de `src/features/**/hooks/`
-- Usar componentes de `src/ui/`
+- Usar componentes de `src/ui/*` (preferência) e primitivos Tamagui (layout)
 - Usar hooks globais de `src/core/` (ex: `useAppTheme`)
 - Gerenciar estado visual local (modais, tabs, form state)
 - Implementar navegação via Expo Router (`useRouter`, `Link`)
@@ -29,8 +41,10 @@ Gerar telas completas para o Expo Router que seguem o padrão:
 
 ---
 
-## 3. Escopo Proibido
+## 4. Escopo Proibido
 
+- ❌ **Criar componentes UI** dentro de `app/` ou `src/features/` (usar `src/ui/*`)
+- ❌ Criar variações de componentes existentes (`LoginButton`, `EmailInput`, etc.)
 - ❌ Importar de `src/data/` (repositories, db, sync, mappers, models)
 - ❌ Conter SQL, queries ou acesso direto ao SQLite
 - ❌ Chamar sync engine ou outbox
@@ -43,7 +57,7 @@ Gerar telas completas para o Expo Router que seguem o padrão:
 
 ---
 
-## 4. Regras do Projeto que Deve Obedecer
+## 5. Regras do Projeto que Deve Obedecer
 
 - Fluxo: **Tela → Hook → Repository → SQLite** (tela só conhece o hook)
 - Estilos via Tamagui `styled()` com tokens `$token` (sem StyleSheet.create, sem .styles.ts)
@@ -55,7 +69,7 @@ Gerar telas completas para o Expo Router que seguem o padrão:
 
 ---
 
-## 5. Inputs Esperados
+## 6. Inputs Esperados
 
 O agente recebe informação da spec (Agent 02) ou pedido direto:
 - Rota da tela (ex: `app/(tabs)/clientes.tsx`)
@@ -65,7 +79,7 @@ O agente recebe informação da spec (Agent 02) ou pedido direto:
 
 ---
 
-## 6. Outputs Obrigatórios
+## 7. Outputs Obrigatórios
 
 Toda resposta deve conter:
 
@@ -100,10 +114,13 @@ Tipo: Lista | Detalhe | Formulário | Modal
 
 ---
 
-## 7. Checklist de Qualidade
+## 8. Checklist de Qualidade
 
 Antes de entregar a tela:
 
+- [ ] Consultei `docs/ui-kit/ui-inventory.md`?
+- [ ] Tela usa `src/ui/*` como primeira opção (não primitivos onde há equivalente)?
+- [ ] Nenhum componente novo criado dentro da tela ou feature?
 - [ ] Tela só importa de `src/features/**/hooks/` e `src/ui/`?
 - [ ] Zero import de `src/data/`?
 - [ ] Zero SQL ou acesso direto a DB?
@@ -118,7 +135,7 @@ Antes de entregar a tela:
 
 ---
 
-## 8. Padrão de Resposta
+## 9. Padrão de Resposta
 
 1. **Rota e tipo** da tela
 2. **Dependências** (hooks e componentes)
@@ -129,7 +146,7 @@ Tom: direto, código final, imports completos.
 
 ---
 
-## 9. Exemplos de Uso
+## 10. Exemplos de Uso
 
 ### Exemplo 1: "Crie a tela de lista de clientes"
 
@@ -160,10 +177,13 @@ import { Button } from '@/src/ui/Button';
 
 ---
 
-## 10. Falhas Comuns e Como Evitar
+## 11. Falhas Comuns e Como Evitar
 
 | Falha | Prevenção |
-|-------|-----------|
+|-------|----------|
+| Criar `LoginButton` na tela | Usar `Button` de `src/ui/Button` com variant adequada |
+| Criar `EmailInput` local | Usar `InputField` de `src/ui/InputField` com keyboardType |
+| Usar `Button` do Tamagui direto | Preferir `Button` de `src/ui/Button` que tem variantes do design system |
 | Importar repository na tela | Tela só importa hooks de features |
 | `import { getDb } from` na tela | Nunca. DB só existe em repository |
 | ScrollView para lista de clientes | FlatList obrigatório para listas |

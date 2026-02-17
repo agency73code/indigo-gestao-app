@@ -1,6 +1,6 @@
 import { createTamagui } from 'tamagui';
 
-import { interFont, soraFont } from './fonts';
+import { bodyFont, soraFont } from './fonts';
 import { themes } from './themes';
 import { tokens } from './tokens';
 
@@ -11,21 +11,19 @@ import { tokens } from './tokens';
  * com shorthands no Tamagui 2.0.0-rc. Props usam nomes completos
  * (alignItems, borderRadius, etc.) para máxima legibilidade.
  *
- * - Inter = body/labels, Sora = headings
- * - Light/dark themes alinhados com o ERP
+ * - Body: DM Sans (Inter temporário) = $body
+ * - Headings: Sora = $heading
+ * - Light/dark themes alinhados com o Figma Mobile
  */
 export const tamaguiConfig = createTamagui({
   tokens,
   themes,
   fonts: {
-    body: interFont,
+    body: bodyFont,
     heading: soraFont,
   },
 });
 
-export type AppConfig = typeof tamaguiConfig;
-
-// Tipagem global para imports de 'tamagui' reconhecerem nossos tokens/temas
-declare module 'tamagui' {
-  interface TamaguiCustomConfig extends AppConfig {}
-}
+// IMPORTANTE: typeof, declare module e interface ficam em
+// tamagui.config.types.ts para não quebrar o Tamagui extractor
+// que parseia este arquivo como JS puro.

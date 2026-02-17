@@ -54,4 +54,12 @@ export const authService = {
             return false;
         }
     },
+
+    async forgotPassword(email: string): Promise<void> {
+        await httpClient.post('/auth/forgot-password', { email }, { auth: false });
+    },
+
+    async resetPassword(token: string, password: string): Promise<void> {
+        await httpClient.post('/auth/reset-password', { token, password }, { auth: false });
+    },
 };

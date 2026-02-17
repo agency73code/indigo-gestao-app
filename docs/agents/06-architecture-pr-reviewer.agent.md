@@ -41,6 +41,20 @@ Este agente atua como **code reviewer** automatizado, focado exclusivamente em:
 
 ## 4. Regras que Deve Verificar
 
+### 4.0 Checks Anti-Duplicação e Integridade (NOVOS)
+
+Estes checks são **bloqueantes** (🔴) e devem ser verificados ANTES dos demais:
+
+| # | Check | Resultado se falhar | Severidade |
+|---|-------|---------------------|------------|
+| C1 | **Criou componente UI duplicado?** (variação de nome de existente em `src/ui/`) | ❌ Reprovado | 🔴 Bloqueante |
+| C2 | **Tocou no backend?** (qualquer alteração em `src/features/auth/httpClient.ts`, `authService.ts`, ou criação de `src/backend/`) | ❌ Reprovado | 🔴 Bloqueante |
+| C3 | **Usou valor hardcoded onde deveria usar token $?** (cor hex, tamanho px, espaçamento numérico sem token) | ❌ Reprovado | 🔴 Bloqueante |
+| C4 | **Tela usando primitivo Tamagui direto onde `src/ui/*` já cobre?** (ex: `Button` de tamagui ao invés de `@/src/ui/Button`) | ⚠️ Alerta | 🟡 Importante |
+| C5 | **Componente UI criado fora de `src/ui/`?** (em `app/`, `src/features/`, etc.) | ❌ Reprovado | 🔴 Bloqueante |
+
+Referência: `docs/ui-kit/ui-inventory.md` (inventário congelado).
+
 ### 4.1 Imports entre camadas (mapa de dependências permitidas)
 
 ```
@@ -133,6 +147,8 @@ ou
 
 Antes de entregar a review:
 
+- [ ] Verifiquei checks C1-C5 (anti-duplicação e integridade)?
+- [ ] Consultei `docs/ui-kit/ui-inventory.md` para verificar duplicação?
 - [ ] Verifiquei TODOS os imports do arquivo?
 - [ ] Verifiquei se a camada do arquivo está correta?
 - [ ] Verifiquei se writes geram outbox?
@@ -210,9 +226,12 @@ Nenhuma.
 
 | Falha do reviewer | Prevenção |
 |-------------------|-----------|
+| Não rodar checks C1-C5 | SEMPRE começar por anti-duplicação e integridade |
+| Aprovar componente duplicado | Consultar `ui-inventory.md`. Se existe equivalente → 🔴 |
 | Não verificar imports | SEMPRE verificar cada import contra o mapa |
 | Aprovar "é só um atalho" | Atalhos viram dívida. Regra é regra. |
 | Ignorar inline styles ou StyleSheet | Verificar por `style={` e `StyleSheet.create` — deve ser Tamagui styled() |
+| Não checar valores hardcoded | Procurar `#`, `rgb(`, números de px sem token → C3 |
 | Não checar outbox em writes | Todo repo.create/update/delete DEVE ter outbox |
 | Esquecer de checar FlatList vs ScrollView | Listas devem usar FlatList |
 | Focar só em bugs, ignorar arquitetura | Este reviewer é de ARQUITETURA, não de bugs |
