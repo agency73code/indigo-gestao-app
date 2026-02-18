@@ -11,6 +11,10 @@ const INDIGO = '#274160';
 const INDIGO_DARK = '#274160'; // pressed
 const WHITE = '#FFFFFF';
 
+const NEUTRAL_100 = '#F7FAFC';
+const NEUTRAL_200 = '#EEEBE5';
+const NEUTRAL_900 = '#1A1F36';
+
 const INPUT_BG = '#FAFAFA';
 
 const TEXT_PRIMARY = '#274160';   // títulos/headings no card
@@ -22,9 +26,15 @@ const BORDER_INPUT = '#E5E7EB';
 const BORDER_FOCUS = INDIGO;
 const BORDER_ERROR = '#DC2626';
 
-const SUCCESS = '#16A34A';
+const SUCCESS = '#22C55E';
 const WARNING = '#F59E0B';
 const ERROR = '#DC2626';
+const DANGER = '#EF4444';
+
+const BADGE_WARNING_BG = '#FFF4E0';
+const BADGE_WARNING_FG = '#A67A5A';
+const BADGE_ERROR_BG = '#FEE2E2';
+const BADGE_ERROR_FG = '#B91C1C';
 
 export const lightTheme = {
   /**
@@ -124,6 +134,35 @@ export const lightTheme = {
 
   shadowColor: 'rgba(0,0,0,0.08)',
   shadowColorHover: 'rgba(0,0,0,0.12)',
+
+  /**
+   * Bottom Navigation:
+   * Barra de navegação customizada com pill shape.
+   */
+  bottomNavBg: WHITE,
+  bottomNavActiveBg: INDIGO,
+  bottomNavActiveFg: NEUTRAL_100,
+  bottomNavInactiveBg: NEUTRAL_200,
+  bottomNavInactiveIcon: NEUTRAL_900,
+
+  /**
+   * Header Home:
+   * Topo índigo com avatar, textos claros e pill branco de status.
+   */
+  headerBg: INDIGO,
+  headerText: NEUTRAL_100,
+  headerNotifBg: NEUTRAL_100,
+  headerNotifIcon: INDIGO,
+  headerNotifDot: DANGER,
+
+  statusPillBg: WHITE,
+  statusPillText: NEUTRAL_900,
+  statusDotSuccess: SUCCESS,
+  statusDotDanger: DANGER,
+  statusBadgeWarningBg: BADGE_WARNING_BG,
+  statusBadgeWarningFg: BADGE_WARNING_FG,
+  statusBadgeErrorBg: BADGE_ERROR_BG,
+  statusBadgeErrorFg: BADGE_ERROR_FG,
 };
 
 export const darkTheme: typeof lightTheme = {
@@ -192,6 +231,27 @@ export const darkTheme: typeof lightTheme = {
 
   shadowColor: 'rgba(0,0,0,0.35)',
   shadowColorHover: 'rgba(0,0,0,0.45)',
+
+  bottomNavBg: '#1A2235',
+  bottomNavActiveBg: '#5A80A2',
+  bottomNavActiveFg: '#E6EEF7',
+  bottomNavInactiveBg: '#1E2A3E',
+  bottomNavInactiveIcon: '#A8B3C2',
+
+  headerBg: '#0B1220',
+  headerText: '#E6EEF7',
+  headerNotifBg: '#1E2A3E',
+  headerNotifIcon: '#E6EEF7',
+  headerNotifDot: '#EF4444',
+
+  statusPillBg: '#0F1A2C',
+  statusPillText: '#E6EEF7',
+  statusDotSuccess: '#22C55E',
+  statusDotDanger: '#EF4444',
+  statusBadgeWarningBg: '#3D2F1A',
+  statusBadgeWarningFg: '#D4A574',
+  statusBadgeErrorBg: '#3B1A1A',
+  statusBadgeErrorFg: '#F87171',
 };
 
 export const themes = {

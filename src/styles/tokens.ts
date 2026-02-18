@@ -53,10 +53,23 @@ export const tokens = createTokens({
     // ── Status ───────────────────────────────────
     red500: '#DC2626',
     red600: '#B91C1C',
-    green500: '#16A34A',
+    green500: '#22C55E',
     green600: '#15803D',
     amber500: '#F59E0B',
     amber600: '#D97706',
+    danger: '#EF4444',
+
+    // ── Badge ────────────────────────────────────
+    badgeWarningBg: '#FFF4E0',
+    badgeWarningFg: '#A67A5A',
+    badgeErrorBg: '#FEE2E2',
+    badgeErrorFg: '#B91C1C',
+
+    // ── Neutral scale (warm / UI surfaces) ─────────
+    neutral0: '#FFFFFF',
+    neutral100: '#F7FAFC',
+    neutral200: '#EEEBE5',
+    neutral900: '#1A1F36',
 
     // ── App Semantics (Figma Mobile) ─────────────
     brandIndigo: '#274160',
@@ -79,6 +92,7 @@ export const tokens = createTokens({
     3.5: 14,
     4: 16,
     5: 20,
+    5.5: 22,
     6: 24,
     7: 28,
     8: 32,
@@ -121,6 +135,8 @@ export const tokens = createTokens({
     6: 20,
     7: 24,
     8: 28,
+    card: 24,
+    header: 45,
     pill: 9999,
   },
 
