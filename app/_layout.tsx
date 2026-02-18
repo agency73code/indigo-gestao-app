@@ -9,9 +9,10 @@ import { Spinner, TamaguiProvider, YStack } from 'tamagui';
 
 import { Sora_300Light, Sora_400Regular } from '@expo-google-fonts/sora';
 
+import { useConnectivityListener } from '@/src/core/providers/ConnectivityProvider';
 import { initDb } from '@/src/data/db/initDb';
-import { useAuthBootstrap } from '@/src/features/auth/useAuthBootstrap';
 import { useAuthStore } from '@/src/features/auth/store';
+import { useAuthBootstrap } from '@/src/features/auth/useAuthBootstrap';
 import { useMobileBootstrap } from '@/src/features/mobile/useMobileBootstrap';
 import { tamaguiConfig } from '@/src/styles/tamagui.config';
 import { SplashAnimated } from '@/src/ui/SplashAnimated';
@@ -21,6 +22,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   useAuthBootstrap();
   useMobileBootstrap();
+  useConnectivityListener();
 
   const authStatus = useAuthStore((s) => s.status);
   const [showSplash, setShowSplash] = useState(true);

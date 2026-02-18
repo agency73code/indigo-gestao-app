@@ -1,12 +1,14 @@
 import React, { useCallback } from 'react';
 import { ScrollView } from 'tamagui';
 
+import { useConnectivity } from '@/src/core/hooks/useConnectivity';
 import { useRecentSessions } from '@/src/features/session/hooks';
 import { HomeHeader } from '@/src/ui/HomeHeader';
 import { QuickActions } from '@/src/ui/QuickActions';
 import { RecentSessions } from '@/src/ui/RecentSessions';
 
 export default function HomeScreen() {
+  const { isOnline } = useConnectivity();
   const { sessions } = useRecentSessions();
 
   const handleActionPress = useCallback((key: string) => {
@@ -26,8 +28,8 @@ export default function HomeScreen() {
       <HomeHeader
         avatarSource="https://i.pravatar.cc/150?u=natan"
         userName="Natan Oliveira"
-        syncStatus="sending"
-        syncCount={3}
+        syncStatus={isOnline ? 'allSent' : 'offline'}
+        syncCount={0}
         hasNotification
         onNotificationPress={() => {}}
       />

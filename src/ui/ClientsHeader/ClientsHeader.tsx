@@ -2,13 +2,14 @@ import { Search, Users } from 'lucide-react-native';
 import React, { memo } from 'react';
 import { Input, styled, Text, useTheme, XStack, YStack } from 'tamagui';
 
+import { ConnectionStatusPill } from '@/src/ui/ConnectionStatusPill';
+
 import type { ClientsHeaderProps } from './ClientsHeader.types';
 
 // ── Constants ────────────────────────────────────────────────
 const ICON_CIRCLE_SIZE = 38;
 const ICON_SIZE = 24;
 const SEARCH_ICON_SIZE = 20;
-const DOT_SIZE = 12;
 const SEARCH_HEIGHT = 47;
 
 // ── Styled ───────────────────────────────────────────────────
@@ -48,41 +49,6 @@ const TitleText = styled(Text, {
   fontWeight: '400',
   color: '$headerText', // gray100
   flex: 1,
-});
-
-// ── Status Pill (compact version for Clients) ────────────────
-
-const PillFrame = styled(XStack, {
-  name: 'ClientsStatusPill',
-  height: 26,
-  borderRadius: '$pill',
-  backgroundColor: '$statusPillBg', // white
-  alignItems: 'center',
-  paddingHorizontal: '$2.5', // 10
-  gap: '$1.5', // 6
-});
-
-const StatusDot = styled(YStack, {
-  name: 'ClientsStatusDot',
-  width: DOT_SIZE,
-  height: DOT_SIZE,
-  borderRadius: '$pill',
-});
-
-const PillText = styled(Text, {
-  name: 'ClientsStatusPillText',
-  fontFamily: '$body',
-  fontSize: 10,
-  fontWeight: '500',
-  color: '$statusPillText',
-});
-
-const DotSeparator = styled(Text, {
-  name: 'ClientsStatusDotSep',
-  fontFamily: '$body',
-  fontSize: 10,
-  fontWeight: '500',
-  color: '$statusPillText',
 });
 
 // ── Search Bar ───────────────────────────────────────────────
@@ -133,20 +99,7 @@ function ClientsHeaderComponent({
 
         <TitleText>Clientes</TitleText>
 
-        <PillFrame>
-          <StatusDot
-            backgroundColor={isOnline ? '$statusDotSuccess' : '$warning'}
-          />
-          {isOnline ? (
-            <PillText>Conectado</PillText>
-          ) : (
-            <>
-              <PillText>Sem internet</PillText>
-              <DotSeparator>•</DotSeparator>
-              <PillText>dados salvos</PillText>
-            </>
-          )}
-        </PillFrame>
+        <ConnectionStatusPill isOnline={isOnline} />
       </TopRow>
 
       <SearchContainer>

@@ -174,6 +174,23 @@ export const lightTheme = {
   sessionListSeparator: NEUTRAL_100,
   sessionText: NEUTRAL_800,
   sessionChevron: NEUTRAL_800,
+
+  /**
+   * Program Status Badges:
+   * Ativo (verde) e Pendente (amber) nos cards de programa.
+   */
+  programBadgeActiveBg: '#CBF4C9',
+  programBadgeActiveFg: '#0E6245',
+  programBadgePendingBg: '#F8E5BA',
+  programBadgePendingFg: '#9C3F0F',
+
+  /**
+   * Area Selector:
+   * Barra de seleção de área na tela de programas.
+   */
+  areaSelectorBg: WHITE,
+  areaSelectorLabel: '#4B5563',
+  areaSelectorBorder: '#A3ACB9',
 };
 export const darkTheme: typeof lightTheme = {  /**
    * Se você ainda não desenhou dark no Figma,
@@ -266,6 +283,15 @@ export const darkTheme: typeof lightTheme = {  /**
   sessionListSeparator: '#2A3650',
   sessionText: '#A8B3C2',
   sessionChevron: '#A8B3C2',
+
+  programBadgeActiveBg: '#1A3D2A',
+  programBadgeActiveFg: '#6EE7B7',
+  programBadgePendingBg: '#3D2F1A',
+  programBadgePendingFg: '#FCD34D',
+
+  areaSelectorBg: '#0F1A2C',
+  areaSelectorLabel: '#A8B3C2',
+  areaSelectorBorder: '#2A3650',
 };
 
 export const themes = {

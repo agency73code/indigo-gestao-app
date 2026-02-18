@@ -1,7 +1,9 @@
+import { useRouter } from 'expo-router';
 import React, { useCallback } from 'react';
 import { FlatList } from 'react-native';
 import { styled, YStack } from 'tamagui';
 
+import { useConnectivity } from '@/src/core/hooks/useConnectivity';
 import { useClients } from '@/src/features/client/hooks';
 import type { ClientItemData } from '@/src/ui/ClientCard';
 import { ClientCard } from '@/src/ui/ClientCard';
@@ -26,11 +28,13 @@ const ListContainer = styled(YStack, {
 // ── Component ────────────────────────────────────────────────
 
 export default function ClientsScreen() {
+  const { isOnline } = useConnectivity();
   const { clients, searchText, setSearchText } = useClients();
+  const router = useRouter();
 
   const handleClientPress = useCallback((id: string) => {
-    // TODO: navegar para detalhe do cliente
-  }, []);
+    router.push(`/(tabs)/clients/${id}`);
+  }, [router]);
 
   const renderItem = useCallback(
     ({ item }: { item: ClientItemData }) => (
@@ -47,7 +51,7 @@ export default function ClientsScreen() {
   return (
     <ScreenContainer>
       <ClientsHeader
-        isOnline
+        isOnline={isOnline}
         searchText={searchText}
         onSearchChange={setSearchText}
       />

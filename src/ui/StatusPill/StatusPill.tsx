@@ -19,8 +19,8 @@ const PillContainer = styled(XStack, {
 /** Dot indicador de conexão. */
 const StatusDot = styled(YStack, {
   name: 'StatusDot',
-  width: 10,
-  height: 10,
+  width: 12,
+  height: 12,
   borderRadius: '$pill',
 
   variants: {
@@ -158,6 +158,8 @@ const STATUS_CONFIGS: Record<SyncStatus, StatusConfig> = {
 function StatusPillComponent({ status, count = 0 }: StatusPillProps) {
   const config = useMemo(() => STATUS_CONFIGS[status], [status]);
 
+  const showSecondary = status === 'allSent' || count > 0;
+
   return (
     <PillContainer>
       <PrefixLabel>Status:</PrefixLabel>
@@ -172,8 +174,12 @@ function StatusPillComponent({ status, count = 0 }: StatusPillProps) {
         </CountBadge>
       )}
 
-      <DotSeparator>{'\u2022'}</DotSeparator>
-      <SecondaryLabel>{config.secondaryText(count)}</SecondaryLabel>
+      {showSecondary && (
+        <>
+          <DotSeparator>{'\u2022'}</DotSeparator>
+          <SecondaryLabel>{config.secondaryText(count)}</SecondaryLabel>
+        </>
+      )}
     </PillContainer>
   );
 }

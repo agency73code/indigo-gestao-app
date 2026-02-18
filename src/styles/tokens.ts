@@ -41,7 +41,7 @@ export const tokens = createTokens({
     // ── Gray (neutros quentes) ───────────────────
     gray50: '#FAFAFA',
     gray100: '#F5F5F5',
-    gray200: '#E5E7EB',
+    gray200: '#EEEBE5',
     gray300: '#D1D5DB',
     gray400: '#9CA3AF',
     gray500: '#6B7280',
