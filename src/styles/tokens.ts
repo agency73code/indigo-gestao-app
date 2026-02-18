@@ -69,7 +69,16 @@ export const tokens = createTokens({
     neutral0: '#FFFFFF',
     neutral100: '#F7FAFC',
     neutral200: '#EEEBE5',
+    neutral800: '#3C4257',
     neutral900: '#1A1F36',
+
+    // ── Specialty chip colors ────────────────────────
+    chipFonoBg: '#E3F2FD',
+    chipFonoFg: '#4A6A8F',
+    chipAbaBg: '#F1F8E9',
+    chipAbaFg: '#758F5A',
+    chipFisioBg: '#E8F5E9',
+    chipFisioFg: '#5A8F6A',
 
     // ── App Semantics (Figma Mobile) ─────────────
     brandIndigo: '#274160',
@@ -136,6 +145,7 @@ export const tokens = createTokens({
     7: 24,
     8: 28,
     card: 24,
+    list: 16,
     header: 45,
     pill: 9999,
   },

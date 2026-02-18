@@ -15,6 +15,8 @@ const NEUTRAL_100 = '#F7FAFC';
 const NEUTRAL_200 = '#EEEBE5';
 const NEUTRAL_900 = '#1A1F36';
 
+const NEUTRAL_800 = '#3C4257';
+
 const INPUT_BG = '#FAFAFA';
 
 const TEXT_PRIMARY = '#274160';   // títulos/headings no card
@@ -163,10 +165,17 @@ export const lightTheme = {
   statusBadgeWarningFg: BADGE_WARNING_FG,
   statusBadgeErrorBg: BADGE_ERROR_BG,
   statusBadgeErrorFg: BADGE_ERROR_FG,
-};
 
-export const darkTheme: typeof lightTheme = {
   /**
+   * Session List:
+   * Card de últimas sessões com avatar, nome, especialidade.
+   */
+  sessionListBg: NEUTRAL_200,
+  sessionListSeparator: NEUTRAL_100,
+  sessionText: NEUTRAL_800,
+  sessionChevron: NEUTRAL_800,
+};
+export const darkTheme: typeof lightTheme = {  /**
    * Se você ainda não desenhou dark no Figma,
    * NÃO inventa um tema “slate completo”.
    * Faz um dark mínimo coerente com a marca:
@@ -252,6 +261,11 @@ export const darkTheme: typeof lightTheme = {
   statusBadgeWarningFg: '#D4A574',
   statusBadgeErrorBg: '#3B1A1A',
   statusBadgeErrorFg: '#F87171',
+
+  sessionListBg: '#1E2A3E',
+  sessionListSeparator: '#2A3650',
+  sessionText: '#A8B3C2',
+  sessionChevron: '#A8B3C2',
 };
 
 export const themes = {

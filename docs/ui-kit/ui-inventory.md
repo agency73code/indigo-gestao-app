@@ -1,6 +1,6 @@
 # UI Inventory — Gestão Índigo
 
-> Atualizado em: 2026-02-14
+> Atualizado em: 2025-06-14
 > Status: **CONGELADO** — novos componentes exigem aprovação explícita.
 
 ---
@@ -114,6 +114,109 @@ Compound: `BadgeFrame` (XStack) + `BadgeLabel` (Text). Pill shape.
 Animação de transição splash → tela real. Usa react-native-reanimated.
 Sequência: logo fade-in + scale → logo move up → card branco slide-up com curva SVG → overlay fade-out.
 **Exceção**: usa StyleSheet.create (renderiza antes do TamaguiProvider).
+
+### 3.7 Avatar — `@/src/ui/Avatar`
+| Prop | Valores |
+|------|---------|
+| `source` | `string \| number` (URL ou require) |
+| `size` | `sm` (40), `md` (44), `lg` (56), `xl` (72) |
+| `fallbackInitials` | `string` (iniciais exibidas quando imagem falha) |
+| `accessibilityLabel` | `string` |
+
+Wrapper de `@tamagui/Avatar` com fallback de iniciais em circle. Pill borderRadius.
+
+### 3.8 BottomTabBar — `@/src/ui/BottomTabBar`
+| Prop | Valores |
+|------|---------|
+| `state` | Bottom tab navigator state |
+| `descriptors` | Tab descriptors |
+| `navigation` | Tab navigation object |
+
+Custom pill-shaped bottom tab bar. 343×64, white bg, space-between, paddingHorizontal 8.
+Ícones: Home, Users, CloudUpload, User (lucide-react-native). Active: `$primary`, inactive: `$bottomNavInactiveIcon`.
+
+### 3.9 StatusPill — `@/src/ui/StatusPill`
+| Prop | Valores |
+|------|---------|
+| `status` | `allSent`, `sending`, `error`, `offline` |
+| `count` | `number` (pendentes, para status `sending`) |
+
+Pill de status de sincronização. Height 47px, paddingHorizontal 24.
+4 estados visuais com ícone + dot + texto. Exibido no HomeHeader.
+
+### 3.10 HomeHeader — `@/src/ui/HomeHeader`
+| Prop | Valores |
+|------|---------|
+| `avatarSource` | `string` (URL da foto) |
+| `userName` | `string` |
+| `syncStatus` | `allSent \| sending \| error \| offline` |
+| `syncCount` | `number` |
+| `hasNotification` | `boolean` |
+| `onNotificationPress` | callback |
+
+Header da Home. Container h=172, bg `$headerBg` (primary), borderBottomRadius 45.
+Avatar md + saudação dinâmica + botão notificação 38×38 + StatusPill.
+
+### 3.11 QuickActions — `@/src/ui/QuickActions`
+| Prop | Valores |
+|------|---------|
+| `onActionPress` | `(key: string) => void` |
+| `onNewSessionPress` | callback |
+
+Seção "Ações Rápidas" com 2 action cards (CalendarClock, Users) + CTA "Nova sessão" com Plus icon.
+Cards: h=122, bg `$neutral200`, borderRadius 24 (literal), alignContent flex-end.
+CTA: h=65, bg `$primary`, pill, ícone Plus com circle.
+
+### 3.12 SessionCard — `@/src/ui/SessionCard`
+| Prop | Valores |
+|------|---------|
+| `item` | `SessionItemData` |
+| `onPress` | `(id: string) => void` |
+| `showSeparator` | `boolean` |
+
+Row com Avatar sm + nome + age + SpecialtyChip + dot + timeAgo + ChevronRight.
+Usado dentro de RecentSessions na Home. Specialty chip via reusable `SpecialtyChip` component.
+
+### 3.13 RecentSessions — `@/src/ui/RecentSessions`
+| Prop | Valores |
+|------|---------|
+| `sessions` | `SessionItemData[]` |
+| `onSessionPress` | `(id: string) => void` |
+
+Seção "Últimas sessões" da Home. Container paddingHorizontal 22, marginTop 20, gap 10.
+Title "Últimas sessões" Sora 18. ListCard bg `$sessionListBg`, borderRadius 16.
+Renderiza lista de `SessionCard` com separadores.
+
+### 3.14 SpecialtyChip — `@/src/ui/SpecialtyChip`
+| Prop | Valores |
+|------|---------|
+| `label` | `string` (nome da especialidade) |
+| `isOverflow` | `boolean` (quando `true`, renderiza como "+N" com estilo neutro) |
+
+Chip de especialidade com cores dinâmicas. Height 20px, pill shape, fontSize 10.
+Cores via `getSpecialtyColors()` de `src/utils/specialtyColors.ts` — 12 especialidades mapeadas.
+Usado em SessionCard e ClientCard.
+
+### 3.15 ClientCard — `@/src/ui/ClientCard`
+| Prop | Valores |
+|------|---------|
+| `item` | `ClientItemData` |
+| `onPress` | `(id: string) => void` |
+| `maxChips` | `number` (default 2, máximo visível antes de "+N") |
+
+Card de cliente: Avatar sm + nome (12px) + idade (right-aligned) + row de SpecialtyChips com overflow "+N" + ChevronRight 20px.
+CardFrame: bg `$sessionListBg`, borderRadius 16, padding 10.
+
+### 3.16 ClientsHeader — `@/src/ui/ClientsHeader`
+| Prop | Valores |
+|------|---------|
+| `isOnline` | `boolean` |
+| `searchText` | `string` |
+| `onSearchChange` | `(text: string) => void` |
+
+Header da tela Clientes. Container h=172, bg `$headerBg`, borderBottomRadius 45.
+TopRow: IconCircle 38×38 (Users 24px) + TitleText "Clientes" (Sora 18) + compact status pill (h=26, dot verde/laranja + texto).
+SearchContainer: h=47, pill, bg `$headerNotifBg`, Search icon 20px + Input placeholder.
 
 ---
 

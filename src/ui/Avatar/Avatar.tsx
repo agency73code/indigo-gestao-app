@@ -6,14 +6,14 @@ import type { AvatarProps, AvatarSize } from './Avatar.types';
 // ── Size map ─────────────────────────────────────────────────
 
 const SIZE_MAP: Record<AvatarSize, number> = {
-  sm: 32,
+  sm: 40,
   md: 44,
   lg: 56,
   xl: 72,
 };
 
 const FONT_SIZE_MAP: Record<AvatarSize, number> = {
-  sm: 12,
+  sm: 14,
   md: 16,
   lg: 20,
   xl: 28,
