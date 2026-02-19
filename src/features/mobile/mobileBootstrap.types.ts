@@ -12,6 +12,8 @@ export type BaseResponse = {
         nome?: string | null;
         status?: string | null;
         emailContato?: string | null;
+        dataNascimento: string;
+        avatarUrl?: string | null;
         atualizadoEm?: string | null;
     }[];
     areasAtuacao: {

@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS cliente (
   nome TEXT,
   status TEXT,
   emailContato TEXT,
+  data_nascimento TEXT,
+  avatar_url TEXT,
   updated_at TEXT
 );
 

@@ -123,20 +123,38 @@ async function persistAll(
 
     for (const cliente of base.clientes) {
       await db.runAsync(
-        `INSERT INTO cliente (id, nome, status, emailContato, updated_at)
-                 VALUES (?, ?, ?, ?, ?);`,
+        `INSERT INTO cliente (
+                    id,
+                    nome,
+                    status,
+                    emailContato,
+                    data_nascimento,
+                    avatar_url,
+                    updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(id) DO UPDATE SET
+                  nome = excluded.nome,
+                  status = excluded.status,
+                  emailContato = excluded.emailContato,
+                  data_nascimento = excluded.data_nascimento,
+                  avatar_url = excluded.avatar_url,
+                  updated_at = excluded.updated_at;`,
         cliente.id,
         cliente.nome ?? null,
         cliente.status ?? null,
         cliente.emailContato ?? null,
+        cliente.dataNascimento,
+        cliente.avatarUrl ?? null,
         cliente.atualizadoEm ?? null,
       );
+
     }
 
     for (const area of base.areasAtuacao) {
       await db.runAsync(
         `INSERT INTO area_atuacao (id, nome)
-                 VALUES (?, ?);`,
+                 VALUES (?, ?)
+                 ON CONFLICT(id) DO UPDATE SET nome = excluded.nome;`,
         area.id,
         area.nome,
       );
