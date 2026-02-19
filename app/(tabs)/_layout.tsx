@@ -25,11 +25,17 @@ const TAB_TO_ROUTE: Record<TabKey, string> = {
 };
 
 function CustomTabBar({ state, navigation }: RNBottomTabBarProps) {
+  const logout = useAuthStore((s) => s.logout); // TODO: APAGAR
   const currentRoute = state.routes[state.index]?.name ?? 'index';
   const activeTab: TabKey = ROUTE_TO_TAB[currentRoute] ?? 'home';
 
   const handleTabPress = useCallback(
     (tabKey: TabKey) => {
+      if (tabKey === 'profile') { // TODO: APAGAR
+        void logout();
+        return;
+      }
+
       const routeName = TAB_TO_ROUTE[tabKey];
       const event = navigation.emit({
         type: 'tabPress',
@@ -41,7 +47,7 @@ function CustomTabBar({ state, navigation }: RNBottomTabBarProps) {
         navigation.navigate(routeName);
       }
     },
-    [navigation, state.routes],
+    [logout, navigation, state.routes], // TODO: APAGAR logout
   );
 
   return <BottomTabBar activeTab={activeTab} onTabPress={handleTabPress} />;

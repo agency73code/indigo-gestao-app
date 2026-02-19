@@ -17,7 +17,32 @@ export async function getDb(): Promise<Db> {
  * Versão do schema. Incrementar sempre que o schema.ts mudar.
  * Em dev, incrementar força um DROP + recreate completo do banco.
  */
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
+
+async function addColumnIfNotExists(
+  database: Db,
+  tableName: string,
+  columnName: string,
+  columnDefinition: string,
+): Promise<void> {
+  const rows = await database.getAllAsync<{ name: string }>(
+    `PRAGMA table_info(${tableName});`,
+  );
+  const hasColumn = rows.some((row) => row.name === columnName);
+
+  if (!hasColumn) {
+    await database.execAsync(
+      `ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDefinition};`,
+    );
+  }
+}
+
+async function runMigrations(database: Db, currentVersion: number): Promise<void> {
+  if (currentVersion < 3) {
+    await addColumnIfNotExists(database, 'cliente', 'data_nascimento', 'TEXT');
+    await addColumnIfNotExists(database, 'cliente', 'avatar_url', 'TEXT');
+  }
+}
 
 export async function initDb(): Promise<void> {
   const database = await getDb();
@@ -29,41 +54,14 @@ export async function initDb(): Promise<void> {
   );
   const currentVersion = result?.user_version ?? 0;
 
-  if (currentVersion < SCHEMA_VERSION) {
-    // Schema desatualizado — dropa tudo e recria (dev only)
-    await database.execAsync(`
-      DROP TABLE IF EXISTS sessao_arquivo;
-      DROP TABLE IF EXISTS faturamento;
-      DROP TABLE IF EXISTS sessao_trial;
-      DROP TABLE IF EXISTS sessao;
-      DROP TABLE IF EXISTS estimulo_ocp;
-      DROP TABLE IF EXISTS estimulo;
-      DROP TABLE IF EXISTS ocp;
-      DROP TABLE IF EXISTS terapeuta_cliente;
-      DROP TABLE IF EXISTS area_atuacao;
-      DROP TABLE IF EXISTS cliente;
-      DROP TABLE IF EXISTS terapeuta;
-      DROP TABLE IF EXISTS outbox;
-    `);
+  if (currentVersion === 0) {
     await database.execAsync(SCHEMA_SQL);
     await database.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION};`);
+    return;
   }
-}
 
-// TODO: APAGAR
-export async function resetDb() {
-  const db = await getDb();
-  await db.execAsync(`
-    DROP TABLE IF EXISTS sessao_arquivo;
-    DROP TABLE IF EXISTS faturamento;
-    DROP TABLE IF EXISTS sessao_trial;
-    DROP TABLE IF EXISTS sessao;
-    DROP TABLE IF EXISTS estimulo_ocp;
-    DROP TABLE IF EXISTS estimulo;
-    DROP TABLE IF EXISTS ocp;
-    DROP TABLE IF EXISTS terapeuta_cliente;
-    DROP TABLE IF EXISTS area_atuacao;
-    DROP TABLE IF EXISTS cliente;
-    DROP TABLE IF EXISTS terapeuta;
-  `);
+  if (currentVersion < SCHEMA_VERSION) {
+    await runMigrations(database, currentVersion);
+    await database.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`);
+  }
 }
