@@ -21,12 +21,13 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   useAuthBootstrap();
-  useMobileBootstrap();
   useConnectivityListener();
-
+  
   const authStatus = useAuthStore((s) => s.status);
+  
+  const [dbReady, setDbReady] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
-
+  
   const [fontsLoaded] = useFonts({
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
     InterLight: require('@tamagui/font-inter/otf/Inter-Light.otf'),
@@ -35,14 +36,15 @@ export default function RootLayout() {
     Sora_300Light,
     Sora_400Regular,
   });
-
+  
   // Inicializa DB (sem reset automático)
   useEffect(() => {
     let cancelled = false;
-
+    
     (async () => {
       try {
         await initDb();
+        if (!cancelled) setDbReady(true);
       } catch (err) {
         const error = err instanceof Error ? err : new Error(String(err));
         console.error('Error initializing DB:', error);
@@ -50,12 +52,14 @@ export default function RootLayout() {
         if (cancelled) return;
       }
     })();
-
+    
     return () => {
       cancelled = true;
     };
   }, []);
-
+  
+  useMobileBootstrap(dbReady && authStatus === 'authenticated');
+  
   useEffect(() => {
     if (fontsLoaded && authStatus !== 'loading') {
       // Hide the native splash — our custom animation takes over

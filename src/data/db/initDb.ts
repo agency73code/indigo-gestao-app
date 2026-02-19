@@ -39,8 +39,8 @@ async function addColumnIfNotExists(
 
 async function runMigrations(database: Db, currentVersion: number): Promise<void> {
   if (currentVersion < 3) {
-    await addColumnIfNotExists(database, 'cliente', 'dataNascimento', 'TEXT');
-    await addColumnIfNotExists(database, 'cliente', 'avatarUrl', 'TEXT');
+    await addColumnIfNotExists(database, 'cliente', 'data_nascimento', 'TEXT');
+    await addColumnIfNotExists(database, 'cliente', 'avatar_url', 'TEXT');
   }
 }
 

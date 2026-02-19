@@ -1,13 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { MOCK_CLIENTS } from '@/src/features/client/mocks/clients.mock';
+import { clientRepository } from '@/src/data/repositories/clientRepository';
 import type { ClientItemData } from '@/src/ui/ClientCard';
-
-/**
- * Flag para controlar uso de mock.
- * Trocar para `false` quando a API real estiver integrada.
- */
-const USE_MOCK = true;
 
 interface UseClientsReturn {
   clients: ClientItemData[];
@@ -20,11 +14,6 @@ interface UseClientsReturn {
 
 /**
  * Hook que fornece a lista de clientes com busca por nome.
- *
- * Quando `USE_MOCK = true`, retorna dados mockados.
- * Quando `USE_MOCK = false`, chamará o repository real (a implementar).
- *
- * Fluxo futuro: useClients → clientRepository.getAll() → SQLite
  */
 export function useClients(): UseClientsReturn {
   const [allClients, setAllClients] = useState<ClientItemData[]>([]);
@@ -32,31 +21,25 @@ export function useClients(): UseClientsReturn {
   const [error, setError] = useState<string | null>(null);
   const [searchText, setSearchText] = useState('');
 
-  const fetchClients = useCallback(() => {
+  const fetchClients = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      if (USE_MOCK) {
-        setAllClients(MOCK_CLIENTS);
-        setLoading(false);
-        return;
-      }
-
-      // TODO: usar clientRepository.getAll() quando disponível
-      // const data = await clientRepository.getAll();
-      // setAllClients(data);
-      setLoading(false);
+      const data = await clientRepository.getAll();
+      setAllClients(data);
     } catch (err) {
+      console.error('[useClients] getAll error:', err);
       const message =
         err instanceof Error ? err.message : 'Erro ao carregar clientes';
       setError(message);
+    } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchClients();
+    void fetchClients();
   }, [fetchClients]);
 
   /** Filtra clientes pelo nome (case-insensitive) */
@@ -77,6 +60,8 @@ export function useClients(): UseClientsReturn {
     error,
     searchText,
     setSearchText,
-    refresh: fetchClients,
+    refresh: () => {
+      void fetchClients();
+    },
   };
 }
