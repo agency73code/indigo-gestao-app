@@ -164,6 +164,7 @@ function AreaSelectorBarComponent({
         <SectionLabel>Filtro</SectionLabel>
         <SelectItem
           title={TODOS_LABEL}
+          titleContent={<SpecialtyChip label={TODOS_LABEL} isOverflow />}
           subtitle="Mostrar todas as áreas"
           selected={tempSelection === TODOS_LABEL}
           onPress={() => setTempSelection(TODOS_LABEL)}
@@ -176,6 +177,7 @@ function AreaSelectorBarComponent({
           <SelectItem
             key={area}
             title={area}
+            titleContent={<SpecialtyChip label={area} />}
             subtitle="Filtrar por especialidade"
             selected={tempSelection === area}
             onPress={() => setTempSelection(area)}

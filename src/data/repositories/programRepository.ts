@@ -30,7 +30,7 @@ async function getByClient(clientId: string): Promise<ProgramsByArea> {
     const programItems = mapProgramRowsToProgramItems(rows);
 
     return programItems.reduce<ProgramsByArea>((acc, item) => {
-        const area = item.area || 'Sem área';
+        const area = item.specialty || 'Sem área';
         if (!acc[area]) {
             acc[area] = [];
         }

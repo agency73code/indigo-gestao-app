@@ -15,7 +15,7 @@ const NEW_SESSION_HEIGHT = 65;
 const Section = styled(YStack, {
   name: 'QuickActionsSection',
   paddingHorizontal: '$5.5', // 22
-  marginTop: '$5', // 20
+  marginTop: '$3', // 12
   gap: '$3', // 12
 });
 
@@ -100,15 +100,42 @@ const ACTIONS = [
   { key: 'pending', label: 'Sessões\npendentes', icon: 'pending' },
 ] as const;
 
+// ── Badge de pendentes ───────────────────────────────────────
+
+const PendingBadge = styled(XStack, {
+  name: 'QuickActionsPendingBadge',
+  height: 18,
+  borderRadius: '$pill',
+  backgroundColor: '$programBadgePendingBg',
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingHorizontal: '$2', // 8
+  position: 'absolute',
+  top: '$3', // 12
+  right: '$3', // 12
+});
+
+const PendingBadgeText = styled(Text, {
+  name: 'QuickActionsPendingBadgeText',
+  fontFamily: '$body',
+  fontSize: 12,
+  fontWeight: '500',
+  color: '$programBadgePendingFg',
+});
+
 // ── Component ────────────────────────────────────────────────
 
-function QuickActionsComponent({ onActionPress, onNewSessionPress }: QuickActionsProps) {
+function QuickActionsComponent({ onActionPress, onNewSessionPress, pendingSessionsCount = 0 }: QuickActionsProps) {
   const theme = useTheme();
 
   const handleCardPress = useCallback(
     (key: string) => () => onActionPress(key),
     [onActionPress],
   );
+
+  const pendingLabel = pendingSessionsCount > 0
+    ? `${pendingSessionsCount} Pendente${pendingSessionsCount > 1 ? 's' : ''}`
+    : null;
 
   return (
     <Section>
@@ -130,6 +157,11 @@ function QuickActionsComponent({ onActionPress, onNewSessionPress }: QuickAction
                 strokeWidth={1.8}
               />
               <CardLabel>{action.label}</CardLabel>
+              {action.key === 'pending' && pendingLabel ? (
+                <PendingBadge>
+                  <PendingBadgeText>{pendingLabel}</PendingBadgeText>
+                </PendingBadge>
+              ) : null}
             </QuickCard>
           );
         })}

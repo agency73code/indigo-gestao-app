@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import React, { useCallback } from 'react';
 import { ScrollView } from 'tamagui';
 
@@ -9,16 +10,19 @@ import { QuickActions } from '@/src/ui/QuickActions';
 import { RecentSessions } from '@/src/ui/RecentSessions';
 
 export default function HomeScreen() {
+  const router = useRouter();
   const { isOnline } = useConnectivity();
-  const { sessions } = useRecentSessions();
+  const { sessions, pendingCount } = useRecentSessions();
   const session = useAuthStore((s) => s.session);
 
   const userName = session?.user?.name ?? 'Terapeuta';
   const avatarSource = session?.user?.avatar_url ?? undefined;
 
   const handleActionPress = useCallback((key: string) => {
-    // TODO: navegar para a tela correspondente
-  }, []);
+    if (key === 'clients') {
+      router.push('/(tabs)/clients');
+    }
+  }, [router]);
 
   const handleNewSession = useCallback(() => {
     // TODO: navegar para criação de sessão
@@ -42,6 +46,7 @@ export default function HomeScreen() {
       <QuickActions
         onActionPress={handleActionPress}
         onNewSessionPress={handleNewSession}
+        pendingSessionsCount={pendingCount}
       />
 
       <RecentSessions

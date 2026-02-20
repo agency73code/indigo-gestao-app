@@ -12,4 +12,6 @@ export interface QuickActionsProps {
   onActionPress: (key: string) => void;
   /** Callback ao pressionar "Nova sessão" */
   onNewSessionPress: () => void;
+  /** Número de sessões pendentes (para exibir badge) */
+  pendingSessionsCount?: number;
 }

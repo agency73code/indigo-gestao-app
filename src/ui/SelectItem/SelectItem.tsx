@@ -47,6 +47,7 @@ const TextGroup = styled(YStack, {
   name: 'SelectItemTextGroup',
   flex: 1,
   justifyContent: 'center',
+  alignItems: 'flex-start',
 });
 
 const TitleText = styled(Text, {
@@ -124,6 +125,7 @@ const CheckCircle = styled(YStack, {
 
 function SelectItemComponent({
   title,
+  titleContent,
   subtitle,
   selected,
   onPress,
@@ -152,8 +154,17 @@ function SelectItemComponent({
 
       {/* Text */}
       <TextGroup>
-        <TitleText>{title}</TitleText>
-        {subtitle ? <SubtitleText>{subtitle}</SubtitleText> : null}
+        {titleContent ? (
+          <>
+            <XStack alignItems="center">{titleContent}</XStack>
+            {subtitle ? <SubtitleText>{subtitle}</SubtitleText> : null}
+          </>
+        ) : (
+          <>
+            <TitleText>{title}</TitleText>
+            {subtitle ? <SubtitleText>{subtitle}</SubtitleText> : null}
+          </>
+        )}
       </TextGroup>
 
       {/* Check indicator (right side) */}

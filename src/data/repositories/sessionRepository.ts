@@ -1,7 +1,7 @@
 import { SessionItemData } from "@/src/ui/SessionCard";
 import { getDb } from "../db/initDb";
-import { SessionRecentRow } from "../models/sessionRecent.model";
 import { mapSessionRowsToSessionItems } from "../mappers/sessionMapper";
+import { SessionRecentRow } from "../models/sessionRecent.model";
 
 const DEFAULT_RECENT_LIMIT = 3;
 
@@ -28,6 +28,19 @@ async function getRecent(limit = DEFAULT_RECENT_LIMIT): Promise<SessionItemData[
     return mapSessionRowsToSessionItems(rows);
 }
 
+async function getPendingCount(): Promise<number> {
+    // TODO: substituir pelo count real quando draft sessions existir
+    // Query real será: SELECT COUNT(*) AS total FROM sessao WHERE server_id IS NULL;
+    const db = await getDb();
+    const row = await db.getFirstAsync<{ total: number }>(
+        `SELECT COUNT(*) AS total FROM sessao;`,
+    );
+    const total = row?.total ?? 0;
+    // Mock: simula ~30% das sessões como pendentes (mínimo 1 se houver sessões)
+    return total > 0 ? Math.max(1, Math.floor(total * 0.3)) : 0;
+}
+
 export const sessionRepository = {
     getRecent,
+    getPendingCount,
 };

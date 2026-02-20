@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import type { SessionItemData } from '@/src/ui/SessionCard';
 import { sessionRepository } from '@/src/data/repositories/sessionRepository';
+import type { SessionItemData } from '@/src/ui/SessionCard';
 
 interface UseRecentSessionsReturn {
   sessions: SessionItemData[];
+  pendingCount: number;
   loading: boolean;
   error: string | null;
   refresh: () => void;
@@ -15,6 +16,7 @@ interface UseRecentSessionsReturn {
  */
 export function useRecentSessions(): UseRecentSessionsReturn {
   const [sessions, setSessions] = useState<SessionItemData[]>([]);
+  const [pendingCount, setPendingCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,8 +25,12 @@ export function useRecentSessions(): UseRecentSessionsReturn {
     setError(null);
 
     try {
-      const data = await sessionRepository.getRecent();
+      const [data, pending] = await Promise.all([
+        sessionRepository.getRecent(),
+        sessionRepository.getPendingCount(),
+      ]);
       setSessions(data);
+      setPendingCount(pending);
     } catch (err) {
       console.error('[useRecentSessions] getRecent error:', err);
       const message =
@@ -41,6 +47,7 @@ export function useRecentSessions(): UseRecentSessionsReturn {
 
   return {
     sessions,
+    pendingCount,
     loading,
     error,
     refresh: () => {
