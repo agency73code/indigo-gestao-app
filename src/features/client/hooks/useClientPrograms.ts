@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
-    MOCK_CLIENT_DETAIL,
-    MOCK_PROGRAMS,
-    type MockClientDetail,
+  MOCK_CLIENT_DETAIL,
+  MOCK_PROGRAMS,
+  type MockClientDetail,
 } from '@/src/features/client/mocks/clientPrograms.mock';
 import type { ProgramItemData } from '@/src/ui/ProgramCard';
 
@@ -12,6 +12,7 @@ import type { ProgramItemData } from '@/src/ui/ProgramCard';
  * Trocar para `false` quando a API real estiver integrada.
  */
 const USE_MOCK = true;
+const TODOS_LABEL = 'Todos';
 
 interface UseClientProgramsReturn {
   client: MockClientDetail | null;
@@ -35,7 +36,7 @@ interface UseClientProgramsReturn {
 export function useClientPrograms(_clientId: string): UseClientProgramsReturn {
   const [client, setClient] = useState<MockClientDetail | null>(null);
   const [allPrograms, setAllPrograms] = useState<Record<string, ProgramItemData[]>>({});
-  const [currentArea, setCurrentArea] = useState('');
+  const [currentArea, setCurrentArea] = useState(TODOS_LABEL);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,10 +48,7 @@ export function useClientPrograms(_clientId: string): UseClientProgramsReturn {
       if (USE_MOCK) {
         setClient(MOCK_CLIENT_DETAIL);
         setAllPrograms(MOCK_PROGRAMS);
-
-        // Seta a primeira área como default
-        const firstArea = MOCK_CLIENT_DETAIL.areas[0] ?? '';
-        setCurrentArea(firstArea);
+        setCurrentArea(TODOS_LABEL);
         setLoading(false);
         return;
       }
@@ -73,10 +71,12 @@ export function useClientPrograms(_clientId: string): UseClientProgramsReturn {
 
   const areas = useMemo(() => client?.areas ?? [], [client]);
 
-  const programs = useMemo(
-    () => allPrograms[currentArea] ?? [],
-    [allPrograms, currentArea],
-  );
+  const programs = useMemo(() => {
+    if (currentArea === TODOS_LABEL) {
+      return Object.values(allPrograms).flat();
+    }
+    return allPrograms[currentArea] ?? [];
+  }, [allPrograms, currentArea]);
 
   return {
     client,

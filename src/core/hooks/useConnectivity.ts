@@ -9,7 +9,7 @@ interface UseConnectivityReturn {
  * ⚠️  Trocar para `true` para forçar estado offline (teste de UI).
  * NUNCA commitar como `true`.
  */
-const FORCE_OFFLINE = true;
+const FORCE_OFFLINE = false;
 
 /**
  * Hook para consumir o status de conectividade em qualquer tela.

@@ -1,8 +1,8 @@
 export interface AreaSelectorBarProps {
-  /** Especialidade atualmente selecionada */
+  /** Área atualmente selecionada ('Todos' = todas) */
   currentArea: string;
-  /** Se o cliente tem mais de uma área disponível */
-  hasMultipleAreas: boolean;
-  /** Callback ao pressionar "Trocar" */
-  onChangeArea: () => void;
+  /** Lista de áreas disponíveis para o cliente */
+  areas: string[];
+  /** Callback ao selecionar uma área */
+  onSelectArea: (area: string) => void;
 }

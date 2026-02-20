@@ -77,8 +77,8 @@ function ClientDetailHeaderComponent({
   isOnline,
   onBack,
   currentArea,
-  hasMultipleAreas,
-  onChangeArea,
+  areas,
+  onSelectArea,
 }: ClientDetailHeaderProps) {
   const theme = useTheme();
 
@@ -116,11 +116,11 @@ function ClientDetailHeaderComponent({
         <ConnectionStatusPill isOnline={isOnline} compact />
       </ContentRow>
 
-      {currentArea && onChangeArea && (
+      {currentArea && onSelectArea && areas && (
         <AreaSelectorBar
           currentArea={currentArea}
-          hasMultipleAreas={hasMultipleAreas ?? false}
-          onChangeArea={onChangeArea}
+          areas={areas}
+          onSelectArea={onSelectArea}
         />
       )}
     </HeaderContainer>

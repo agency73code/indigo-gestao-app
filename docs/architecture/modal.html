@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Indigo — Selecionar área (Bottom Sheet)</title>
+  <style>
+    :root{
+      --bg:#0b1224;
+      --surface:#0f1b33;
+      --sheet:#ffffff;
+      --text:#0b1224;
+      --muted: rgba(11,18,36,.62);
+      --stroke: rgba(11,18,36,.10);
+
+      --primary:#1f4fff;
+      --primary-weak: rgba(31,79,255,.10);
+
+      --radius-xl: 22px;
+      --radius: 16px;
+      --radius-sm: 12px;
+
+      --shadow: 0 18px 50px rgba(0,0,0,.35);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,.18);
+
+      --tap: 52px; /* tamanho mínimo confortável */
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      background: radial-gradient(900px 480px at 25% -10%, rgba(31,79,255,.18), transparent 60%),
+                  radial-gradient(900px 480px at 85% 0%, rgba(34,197,94,.10), transparent 60%),
+                  var(--bg);
+      display:flex;
+      justify-content:center;
+      padding: 18px;
+      color: white;
+    }
+
+    /* Conteúdo “por trás” (simulando a tela de Programas Ativos) */
+    .app{
+      width: min(420px, 100%);
+      border-radius: 26px;
+      overflow:hidden;
+      background: rgba(255,255,255,.02);
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: var(--shadow);
+    }
+
+    .header{
+      padding: 16px 16px 14px;
+      background: rgba(15,27,51,.92);
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+    .header .left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .avatar{
+      width: 36px; height: 36px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .title{
+      min-width:0;
+    }
+    .title strong{
+      display:block;
+      font-size:14px;
+      letter-spacing:.2px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .title span{
+      display:block;
+      font-size:12px;
+      opacity:.75;
+      margin-top:2px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34,197,94,.18);
+    }
+
+    .content{
+      padding: 16px;
+      min-height: 620px;
+      background: rgba(255,255,255,.04);
+    }
+    .filterBar{
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      padding: 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      color: rgba(255,255,255,.9);
+    }
+    .filterBar .meta{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+    .filterBar .meta small{
+      opacity:.75;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius: 999px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.14);
+      font-size:12px;
+      font-weight:800;
+      user-select:none;
+      max-width: 100%;
+    }
+    .chip .caret{
+      opacity:.75;
+      font-weight:900;
+    }
+
+    .openBtn{
+      height: 40px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: white;
+      font-weight:900;
+      letter-spacing:.2px;
+      padding: 0 12px;
+      cursor:pointer;
+    }
+    .openBtn:active{ transform: translateY(1px); }
+
+    /* Overlay + Sheet */
+    .overlay{
+      position: fixed;
+      inset:0;
+      background: rgba(0,0,0,.45);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .18s ease;
+      display:flex;
+      justify-content:center;
+      align-items:flex-end;
+      padding: 18px;
+    }
+    .overlay.show{
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    .sheet{
+      width:min(420px, 100%);
+      background: var(--sheet);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      transform: translateY(18px);
+      opacity:0;
+      transition: transform .18s ease, opacity .18s ease;
+      overflow:hidden;
+    }
+    .overlay.show .sheet{
+      transform: translateY(0);
+      opacity:1;
+    }
+
+    .sheetHeader{
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid var(--stroke);
+      background: rgba(255,255,255,.98);
+    }
+
+    .grabber{
+      width: 44px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(11,18,36,.18);
+      margin: 0 auto 10px;
+    }
+
+    .sheetHeaderRow{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .sheetTitle{
+      margin:0;
+      font-size:16px;
+      letter-spacing:.2px;
+      color: var(--text);
+    }
+    .sheetSub{
+      margin:6px 0 0;
+      font-size:12px;
+      color: var(--muted);
+      line-height:1.2;
+    }
+
+    .closeBtn{
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      border: 1px solid var(--stroke);
+      background: rgba(11,18,36,.03);
+      color: var(--text);
+      font-weight: 900;
+      cursor:pointer;
+    }
+    .closeBtn:active{ transform: translateY(1px); }
+
+    .sheetBody{
+      padding: 10px 12px 12px;
+      background: rgba(255,255,255,.98);
+    }
+
+    .sectionLabel{
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing:.2px;
+      color: rgba(11,18,36,.55);
+      padding: 8px 8px 6px;
+    }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .item{
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      min-height: var(--tap);
+      padding: 12px 12px;
+      border-radius: 16px;
+      border: 1px solid var(--stroke);
+      background: rgba(11,18,36,.02);
+      cursor:pointer;
+      user-select:none;
+      overflow:hidden;
+      transition: background .14s ease, border-color .14s ease, transform .06s ease;
+    }
+    .item:active{
+      transform: translateY(1px);
+      background: rgba(11,18,36,.04);
+    }
+
+    .item .left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .areaDot{
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(11,18,36,.18);
+      flex:0 0 auto;
+    }
+    .areaName{
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .areaMeta{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .check{
+      width: 28px;
+      height: 28px;
+      border-radius: 12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border: 1px solid var(--stroke);
+      background: rgba(11,18,36,.03);
+      color: rgba(11,18,36,.55);
+      font-weight: 1000;
+      flex: 0 0 auto;
+    }
+
+    .item.selected{
+      border-color: rgba(31,79,255,.28);
+      background: var(--primary-weak);
+    }
+    .item.selected .check{
+      border-color: rgba(31,79,255,.25);
+      background: rgba(31,79,255,.12);
+      color: var(--primary);
+    }
+    .item.selected .areaDot{
+      background: var(--primary);
+      box-shadow: 0 0 0 4px rgba(31,79,255,.15);
+    }
+
+    /* Ripple simples */
+    .ripple{
+      position:absolute;
+      border-radius: 999px;
+      transform: scale(0);
+      animation: ripple .45s ease-out;
+      background: rgba(31,79,255,.18);
+      pointer-events:none;
+    }
+    @keyframes ripple{
+      to{
+        transform: scale(8);
+        opacity: 0;
+      }
+    }
+
+    /* Footer do sheet */
+    .sheetFooter{
+      padding: 12px 12px 14px;
+      border-top: 1px solid var(--stroke);
+      background: rgba(255,255,255,.98);
+      display:flex;
+      gap:10px;
+    }
+    .btn{
+      height: 46px;
+      border-radius: 16px;
+      border: 1px solid var(--stroke);
+      background: rgba(11,18,36,.03);
+      color: var(--text);
+      font-weight: 900;
+      letter-spacing:.2px;
+      cursor:pointer;
+      flex:1;
+    }
+    .btn.primary{
+      border-color: rgba(31,79,255,.25);
+      background: rgba(31,79,255,.12);
+      color: var(--primary);
+    }
+    .btn:active{ transform: translateY(1px); }
+
+    /* Acessibilidade */
+    .sr-only{
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app">
+    <div class="header">
+      <div class="left">
+        <div class="avatar"></div>
+        <div class="title">
+          <strong>Aline Nogueira da Silva</strong>
+          <span>12 anos</span>
+        </div>
+      </div>
+      <div class="pill">
+        <span class="dot"></span>
+        Conectado
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="filterBar">
+        <div class="meta">
+          <small>Área atual</small>
+          <div class="chip" id="currentAreaChip" aria-label="Área selecionada">
+            <span id="currentAreaText">Fonoaudiologia</span>
+            <span class="caret">▾</span>
+          </div>
+        </div>
+        <button class="openBtn" id="openSheet">Selecionar</button>
+      </div>
+
+      <div style="height:18px"></div>
+
+      <div style="opacity:.85">
+        <div style="font-weight:900; letter-spacing:.2px; font-size:18px;">Programas ativos</div>
+        <div style="opacity:.75; font-size:12px; margin-top:6px;">
+          (Conteúdo de fundo só para simular contexto)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay + Bottom Sheet -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <div class="sheetHeader">
+        <div class="grabber"></div>
+        <div class="sheetHeaderRow">
+          <div>
+            <h2 class="sheetTitle" id="sheetTitle">Selecionar área</h2>
+            <p class="sheetSub">Escolha uma área para filtrar programas e sessões.</p>
+          </div>
+          <button class="closeBtn" id="closeSheet" aria-label="Fechar">×</button>
+        </div>
+      </div>
+
+      <div class="sheetBody">
+        <div class="sectionLabel">Filtro</div>
+        <div class="list" id="listFilter"></div>
+
+        <div class="sectionLabel" style="margin-top:6px;">Áreas</div>
+        <div class="list" id="listAreas"></div>
+      </div>
+
+      <div class="sheetFooter">
+        <button class="btn" id="btnCancel">Cancelar</button>
+        <button class="btn primary" id="btnApply">Aplicar</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  // Dados (exemplo)
+  const FILTERS = [
+    { id: "all", label: "Todos", kind: "filter" },
+  ];
+
+  const AREAS = [
+    { id: "fono", label: "Fonoaudiologia" },
+    { id: "aba",  label: "Terapia ABA" },
+  ];
+
+  // Estado
+  let selectedId = "fono";      // área atual aplicada
+  let draftSelectedId = "fono"; // seleção temporária no sheet
+
+  // Elements
+  const overlay = document.getElementById("overlay");
+  const openSheetBtn = document.getElementById("openSheet");
+  const closeSheetBtn = document.getElementById("closeSheet");
+  const btnCancel = document.getElementById("btnCancel");
+  const btnApply = document.getElementById("btnApply");
+  const currentAreaText = document.getElementById("currentAreaText");
+
+  const listFilter = document.getElementById("listFilter");
+  const listAreas = document.getElementById("listAreas");
+
+  function getLabelById(id){
+    const fromAreas = AREAS.find(a => a.id === id);
+    if (fromAreas) return fromAreas.label;
+    const fromFilters = FILTERS.find(f => f.id === id);
+    if (fromFilters) return fromFilters.label;
+    return "—";
+  }
+
+  function openSheet(){
+    draftSelectedId = selectedId;
+    renderLists();
+    overlay.classList.add("show");
+    overlay.setAttribute("aria-hidden", "false");
+    // foco básico
+    closeSheetBtn.focus();
+  }
+
+  function closeSheet(){
+    overlay.classList.remove("show");
+    overlay.setAttribute("aria-hidden", "true");
+    openSheetBtn.focus();
+  }
+
+  function applySelection(){
+    selectedId = draftSelectedId;
+    currentAreaText.textContent = getLabelById(selectedId);
+    closeSheet();
+  }
+
+  function createItem({ id, label, kind = "area" }){
+    const item = document.createElement("div");
+    item.className = "item";
+    item.setAttribute("role", "button");
+    item.setAttribute("tabindex", "0");
+    item.dataset.id = id;
+
+    const left = document.createElement("div");
+    left.className = "left";
+
+    const dot = document.createElement("span");
+    dot.className = "areaDot";
+    if (kind === "filter") {
+      dot.style.background = "rgba(11,18,36,.12)";
+      dot.style.boxShadow = "none";
+    }
+
+    const textWrap = document.createElement("div");
+    textWrap.style.minWidth = "0";
+
+    const name = document.createElement("div");
+    name.className = "areaName";
+    name.textContent = label;
+
+    const meta = document.createElement("div");
+    meta.className = "areaMeta";
+    meta.textContent = kind === "filter" ? "Mostra todas as áreas" : "Filtra por especialidade";
+
+    textWrap.appendChild(name);
+    textWrap.appendChild(meta);
+
+    const check = document.createElement("div");
+    check.className = "check";
+    check.textContent = "✓";
+
+    left.appendChild(dot);
+    left.appendChild(textWrap);
+
+    item.appendChild(left);
+    item.appendChild(check);
+
+    // click + ripple
+    item.addEventListener("click", (e) => {
+      ripple(e, item);
+      draftSelectedId = id;
+      renderLists();
+    });
+
+    // teclado
+    item.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        draftSelectedId = id;
+        renderLists();
+      }
+    });
+
+    return item;
+  }
+
+  function ripple(e, item){
+    const rect = item.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const r = document.createElement("span");
+    r.className = "ripple";
+    r.style.left = (x - 10) + "px";
+    r.style.top  = (y - 10) + "px";
+    r.style.width = "20px";
+    r.style.height = "20px";
+    item.appendChild(r);
+
+    setTimeout(() => r.remove(), 520);
+  }
+
+  function renderLists(){
+    listFilter.innerHTML = "";
+    listAreas.innerHTML = "";
+
+    FILTERS.forEach(opt => {
+      const item = createItem({ id: opt.id, label: opt.label, kind: "filter" });
+      if (draftSelectedId === opt.id) item.classList.add("selected");
+      listFilter.appendChild(item);
+    });
+
+    AREAS.forEach(opt => {
+      const item = createItem({ id: opt.id, label: opt.label, kind: "area" });
+      if (draftSelectedId === opt.id) item.classList.add("selected");
+      listAreas.appendChild(item);
+    });
+  }
+
+  // Eventos
+  openSheetBtn.addEventListener("click", openSheet);
+  closeSheetBtn.addEventListener("click", closeSheet);
+  btnCancel.addEventListener("click", closeSheet);
+  btnApply.addEventListener("click", applySelection);
+
+  // clicar fora fecha
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeSheet();
+  });
+
+  // ESC fecha
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("show")) closeSheet();
+  });
+
+  // init
+  currentAreaText.textContent = getLabelById(selectedId);
+})();
+</script>
+</body>
+</html>

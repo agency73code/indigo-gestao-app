@@ -3,1049 +3,721 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Nova Sessão • Mobile</title>
+  <title>Indigo — Toasts (Rascunho / Finalização)</title>
   <style>
     :root{
-      --bg:#f5f6f8;
-      --card:#ffffff;
-      --beige:#e9e6e0;
-      --text:#0f172a;
-      --muted:#64748b;
-      --border:#e5e7eb;
-
-      --nav:#ffffffee;
-      --primary:#1f3b5b;         /* azul escuro */
-      --primary-2:#254a73;
-
-      --chip-blue-bg:#d9e9ff;
-      --chip-blue-fg:#1f4a7a;
-
-      --ok-bg:#ecfdf5;
-      --ok-fg:#047857;
-
-      --warn-bg:#fff7ed;
-      --warn-fg:#c2410c;
-
-      --err-bg:#fee2e2;
-      --err-fg:#b91c1c;
-
-      --shadow: 0 12px 26px rgba(15,23,42,.10);
-      --radius:22px;
-
-      --btn:#0b2a46;
-      --btnText:#fff;
-
-      --hit:56px;
+      --bg:#0f172a;
+      --surface:#0b1224;
+      --card:#0b1224;
+      --stroke:rgba(255,255,255,.10);
+      --text:#e5e7eb;
+      --muted:rgba(229,231,235,.7);
+      --primary:#2563eb;
+      --ok:#22c55e;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --shadow: 0 10px 30px rgba(0,0,0,.45);
+      --radius: 16px;
+      --radius-sm: 12px;
+      --pad: 16px;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
 
     *{ box-sizing:border-box; }
     body{
       margin:0;
-      background:#2b2b2b;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      min-height:100vh;
+      background: radial-gradient(1200px 600px at 30% -10%, rgba(37,99,235,.25), transparent 55%),
+                  radial-gradient(1200px 600px at 90% 10%, rgba(34,197,94,.14), transparent 55%),
+                  var(--bg);
       color:var(--text);
       display:flex;
       justify-content:center;
       padding:24px;
     }
 
-    /* phone frame */
-    .phone{
-      width:390px;
-      height:844px;
-      background:var(--bg);
-      border-radius:34px;
+    .app{
+      width:min(420px, 100%);
+      background: rgba(11,18,36,.55);
+      border:1px solid var(--stroke);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
       overflow:hidden;
-      box-shadow: 0 30px 70px rgba(0,0,0,.35);
-      position:relative;
+      backdrop-filter: blur(10px);
     }
 
-    .statusbar{
-      height:44px;
-      padding:12px 18px 0 18px;
-      color:#fff;
-      background:var(--primary);
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      font-weight:600;
-      letter-spacing:.3px;
-    }
-    .statusbar .right{
-      display:flex; gap:8px; align-items:center; opacity:.95;
-      font-size:12px;
-    }
-    .dot{ width:6px; height:6px; border-radius:999px; background:#fff; opacity:.9; display:inline-block; }
-
-    /* header */
-    .header{
-      background:var(--primary);
-      padding:14px 18px 18px 18px;
-      color:#fff;
-      border-bottom-left-radius:34px;
-      border-bottom-right-radius:34px;
-      position:relative;
-      z-index:3;
-    }
-    .header-top{
+    .topbar{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:12px;
-      margin-bottom:12px;
+      padding: 14px var(--pad);
+      border-bottom: 1px solid var(--stroke);
+      background: rgba(11,18,36,.75);
     }
-    .left{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      min-width:0;
-    }
-    .back{
-      width:42px; height:42px; border-radius:999px;
-      background: rgba(255,255,255,.14);
-      display:grid; place-items:center;
-      flex:0 0 auto;
-    }
-    .title-wrap{ min-width:0; }
+
     .title{
-      font-size:18px;
-      font-weight:900;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width:210px;
-    }
-    .subtitle{
-      font-size:12px;
-      opacity:.86;
-      margin-top:2px;
       display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
+      flex-direction:column;
+      gap:2px;
     }
-    .chip{
-      font-size:11px;
-      font-weight:900;
-      padding:6px 10px;
-      border-radius:999px;
-      display:inline-flex;
-      align-items:center;
-      white-space:nowrap;
-      border: 1px solid rgba(255,255,255,.22);
-      background: rgba(255,255,255,.10);
-      color:#fff;
-    }
+    .title strong{ font-size:14px; letter-spacing:.2px; }
+    .title span{ font-size:12px; color:var(--muted); }
 
     .pill{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding:8px 10px;
-      border-radius:999px;
-      background:#fff;
-      color:#0f172a;
-      font-size:12px;
-      font-weight:900;
-      box-shadow: 0 10px 18px rgba(0,0,0,.18);
-      white-space:nowrap;
-    }
-    .pill .p-dot{ width:10px;height:10px;border-radius:999px;background:#22c55e; display:inline-block; }
-    .pill.offline .p-dot{ background:#f59e0b; }
-    .pill.error .p-dot{ background:#ef4444; }
-
-    /* stepper */
-    .stepper{
-      margin-top:10px;
-      background: rgba(255,255,255,.12);
-      border: 1px solid rgba(255,255,255,.18);
-      border-radius: 999px;
-      padding: 8px 10px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .steps{
-      display:flex; gap:8px; align-items:center;
-      min-width:0;
-    }
-    .step-dot{
-      width:24px;height:24px;border-radius:999px;
-      display:grid;place-items:center;
-      font-size:12px;
-      font-weight:900;
-      background: rgba(255,255,255,.12);
-      border:1px solid rgba(255,255,255,.22);
-      color:#fff;
-    }
-    .step-dot.active{
-      background:#fff;
-      color:#0f172a;
-      border-color:#fff;
-    }
-    .step-label{
-      font-size:12px;
-      font-weight:900;
-      opacity:.9;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width:190px;
-    }
-
-    .step-actions{
-      display:flex; gap:8px; align-items:center;
-    }
-    .mini-btn{
-      width:36px;height:36px;border-radius:999px;
-      background:#fff;
-      border:none;
-      display:grid;place-items:center;
-      box-shadow: 0 10px 18px rgba(0,0,0,.18);
-      cursor:default;
-      user-select:none;
-      opacity:.95;
-    }
-    .mini-btn:active{ transform: translateY(1px); }
-
-    /* content */
-    .content{
-      padding:16px 16px 110px 16px;
-      height: calc(844px - 44px - 168px);
-      overflow:auto;
-      position:relative;
-      z-index:1;
-    }
-
-    .panel{
-      background: var(--card);
-      border: 1px solid rgba(226,232,240,.9);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 14px;
-      margin-bottom:12px;
-    }
-    .panel-title{
-      font-weight:900;
-      margin-bottom:10px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .muted{ color:var(--muted); font-size:13px; line-height:1.35; }
-
-    .row{
-      display:flex; gap:10px; align-items:center; justify-content:space-between;
-      margin-top:10px;
-      flex-wrap:wrap;
-    }
-    .kv{
-      font-size:12px;
-      color:#334155;
-      font-weight:800;
-    }
-    .kv b{ color:#0f172a; }
-
-    /* stimulus list */
-    .stim-list{ display:flex; flex-direction:column; gap:10px; }
-
-    .stim-card{
-      background: var(--beige);
-      border-radius: 20px;
-      padding: 12px;
-      border: 1px solid rgba(226,232,240,.6);
-      box-shadow: var(--shadow);
-    }
-    .stim-top{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:10px;
-    }
-    .stim-name{
-      font-weight:900;
-      font-size:14px;
-      line-height:1.15;
-      margin-bottom:6px;
-      max-width:240px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .stim-sub{
-      font-size:12px;
-      color:#475569;
-      font-weight:800;
-      display:flex; gap:8px; flex-wrap:wrap;
-      align-items:center;
-    }
-    .badge{
-      font-size:11px;
-      font-weight:900;
       padding:6px 10px;
       border-radius:999px;
+      border:1px solid var(--stroke);
+      color:var(--muted);
+      font-size:12px;
+      background: rgba(255,255,255,.04);
+      user-select:none;
+    }
+    .dot{
+      width:9px;height:9px;border-radius:999px;background:var(--ok);
+      box-shadow:0 0 0 4px rgba(34,197,94,.15);
+    }
+    .dot.offline{ background: var(--warn); box-shadow:0 0 0 4px rgba(245,158,11,.15); }
+    .dot.error{ background: var(--danger); box-shadow:0 0 0 4px rgba(239,68,68,.15); }
+
+    .content{
+      padding: 16px;
+      min-height: 560px;
+    }
+
+    .screen{
+      display:none;
+      animation: fadeIn .18s ease-out;
+    }
+    .screen.active{ display:block; }
+
+    @keyframes fadeIn{
+      from{ opacity:0; transform: translateY(6px); }
+      to{ opacity:1; transform: translateY(0); }
+    }
+
+    .card{
+      padding: 14px;
+      border-radius: var(--radius);
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.03);
+      box-shadow: 0 6px 18px rgba(0,0,0,.18);
+    }
+
+    .h1{
+      font-size:18px;
+      margin:0 0 6px;
+      letter-spacing:.2px;
+    }
+    .p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.35;
+      font-size:13px;
+    }
+
+    .grid{
+      display:grid;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top: 12px;
+    }
+
+    button{
+      appearance:none;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:600;
+      letter-spacing:.2px;
+      font-size:13px;
+    }
+    button.primary{
+      background: rgba(37,99,235,.15);
+      border-color: rgba(37,99,235,.35);
+    }
+    button.danger{
+      background: rgba(239,68,68,.12);
+      border-color: rgba(239,68,68,.35);
+    }
+    button:active{ transform: translateY(1px); }
+
+    .split{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.02);
+    }
+    .split small{ color:var(--muted); }
+
+    .badge{
       display:inline-flex;
       align-items:center;
-      white-space:nowrap;
-      border: 1px solid rgba(15,23,42,.10);
-      background: rgba(255,255,255,.55);
-      color:#0f172a;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      border:1px solid transparent;
+      user-select:none;
     }
-    .badge.ok{ background:var(--ok-bg); color:var(--ok-fg); border-color: rgba(16,185,129,.15); }
-    .badge.warn{ background:var(--warn-bg); color:var(--warn-fg); border-color: rgba(249,115,22,.15); }
+    .badge.ok{ background: rgba(34,197,94,.14); border-color: rgba(34,197,94,.30); color:#bbf7d0; }
+    .badge.draft{ background: rgba(245,158,11,.14); border-color: rgba(245,158,11,.30); color:#fde68a; }
+    .badge.final{ background: rgba(37,99,235,.14); border-color: rgba(37,99,235,.30); color:#bfdbfe; }
 
-    .btn{
-      border:none;
-      border-radius: 999px;
-      padding: 12px 14px;
-      font-weight:900;
-      font-size:13px;
-      display:inline-flex;
+    /* Toast */
+    .toast-wrap{
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 18px;
+      display:flex;
+      justify-content:center;
+      pointer-events:none;
+      z-index: 9999;
+    }
+    .toast{
+      width: min(420px, calc(100% - 24px));
+      background: rgba(11,18,36,.92);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px;
+      padding: 12px 12px;
+      box-shadow: var(--shadow);
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      transform: translateY(16px);
+      opacity: 0;
+      transition: transform .18s ease, opacity .18s ease;
+      pointer-events:auto;
+      backdrop-filter: blur(10px);
+    }
+    .toast.show{
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .toast .icon{
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      display:flex;
       align-items:center;
       justify-content:center;
-      gap:10px;
-      cursor:default;
-      user-select:none;
-      height: var(--hit);
-      min-width: 140px;
-    }
-    .btn.primary{
-      background: var(--btn);
-      color:var(--btnText);
-      box-shadow: 0 16px 28px rgba(31,59,91,.25);
-    }
-    .btn.ghost{
-      background: rgba(255,255,255,.70);
-      color:#0f172a;
-      border: 1px solid rgba(15,23,42,.10);
-    }
-    .btn.disabled{
-      opacity:.55;
-      filter: grayscale(.2);
-    }
-    .btn .circle{
-      width:30px;height:30px;border-radius:999px;
-      display:grid;place-items:center;
-      background: rgba(255,255,255,.16);
-    }
-    .btn.ghost .circle{ background: rgba(15,23,42,.06); }
-
-    /* active stimulus overlay mode */
-    .overlay{
-      position:absolute;
-      inset:44px 0 84px 0; /* below statusbar and above nav */
-      background: rgba(15,23,42,.35);
-      backdrop-filter: blur(6px);
-      display:none;
-      z-index:10;
-      padding:16px;
-    }
-    .overlay.on{ display:block; }
-
-    .focus{
-      background: var(--card);
-      border-radius: 26px;
-      box-shadow: 0 30px 70px rgba(0,0,0,.35);
-      border: 1px solid rgba(226,232,240,.9);
-      padding: 14px;
-      height: 100%;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-    .focus-top{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .focus-title{
-      font-weight:1000;
-      font-size:16px;
-      line-height:1.15;
-      margin-bottom:4px;
-    }
-    .focus-sub{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:800;
-    }
-    .timer{
-      font-size:12px;
-      font-weight:1000;
-      background: rgba(15,23,42,.06);
-      border: 1px solid rgba(15,23,42,.08);
-      padding:8px 10px;
-      border-radius: 999px;
-      white-space:nowrap;
-    }
-
-    .counters{
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap:10px;
-      margin-top:4px;
-    }
-    .counter{
-      border-radius: 18px;
-      border: 1px solid rgba(15,23,42,.10);
-      background: #fff;
-      padding: 12px;
-      box-shadow: var(--shadow);
-      min-height: 92px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-    }
-    .counter .top{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-    }
-    .counter .label{
-      font-size:12px;
-      font-weight:1000;
-    }
-    .counter .value{
-      font-size:28px;
-      font-weight:1100;
-      letter-spacing:.5px;
-      margin-top:6px;
-    }
-    .counter .hint{
-      font-size:11px;
-      color:var(--muted);
-      font-weight:800;
-      margin-top:8px;
-    }
-    .counter.err .label{ color: var(--err-fg); }
-    .counter.help .label{ color: var(--warn-fg); }
-    .counter.ok .label{ color: var(--ok-fg); }
-
-    .focus-actions{
-      display:flex;
-      gap:10px;
-      margin-top:auto;
-    }
-    .focus-actions .btn{ flex:1 1 auto; min-width:0; }
-    .btn.pause{
-      background: rgba(15,23,42,.06);
-      color:#0f172a;
-      border: 1px solid rgba(15,23,42,.12);
-      box-shadow:none;
-    }
-    .btn.finish{
-      background: var(--btn);
-      color:#fff;
-    }
-
-    .collapse{
-      margin-top:8px;
-      border-radius:18px;
-      background: rgba(15,23,42,.03);
-      border:1px solid rgba(15,23,42,.06);
-      padding:12px;
-    }
-    .collapse-title{
-      font-weight:1000;
-      font-size:13px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      cursor:default;
-      user-select:none;
-    }
-    .collapse-body{
-      margin-top:10px;
-      color:#475569;
-      font-size:13px;
-      line-height:1.35;
-    }
-
-    /* textarea */
-    textarea{
-      width:100%;
-      min-height:140px;
-      resize:none;
-      border-radius:16px;
-      border: 1px solid rgba(15,23,42,.12);
-      padding: 12px;
-      font-size:14px;
-      line-height:1.35;
-      outline:none;
-      background:#fff;
-    }
-    .char{
-      margin-top:8px;
-      font-size:12px;
-      color:var(--muted);
-      text-align:right;
-      font-weight:800;
-    }
-
-    /* files */
-    .drop{
-      margin-top:10px;
-      border-radius:18px;
-      border: 2px dashed rgba(15,23,42,.14);
-      background: rgba(255,255,255,.65);
-      padding: 16px;
-      text-align:center;
-      color:#475569;
+      flex: 0 0 auto;
+      margin-top: 1px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
       font-weight:900;
     }
-    .drop small{
+    .toast .body{ flex:1; }
+    .toast .body strong{
+      display:block;
+      font-size:13px;
+      letter-spacing:.2px;
+      margin-bottom: 2px;
+    }
+    .toast .body span{
       display:block;
       font-size:12px;
-      font-weight:800;
-      color:var(--muted);
-      margin-top:6px;
+      color: var(--muted);
+      line-height: 1.25;
     }
-
-    /* footer actions */
-    .footer{
-      position:absolute;
-      left:0; right:0; bottom:84px;
-      padding: 10px 14px 10px;
-      z-index:4;
-      pointer-events:none; /* allow scrolling behind, except buttons */
+    .toast .actions{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      margin-left: 6px;
     }
-    .footer-inner{
+    .toast .link{
       pointer-events:auto;
-      background: rgba(245,246,248,.86);
-      border:1px solid rgba(226,232,240,.9);
-      backdrop-filter: blur(10px);
-      border-radius: 999px;
-      padding: 10px;
-      display:flex;
-      gap:10px;
-      box-shadow: 0 16px 34px rgba(15,23,42,.12);
-      align-items:center;
-      justify-content:space-between;
-    }
-    .footer-note{
+      border:none;
+      background: transparent;
+      color: #bfdbfe;
+      padding: 6px 8px;
+      border-radius: 10px;
+      font-weight:800;
+      cursor:pointer;
       font-size:12px;
-      color:#475569;
-      font-weight:900;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width:150px;
     }
-    .footer-actions{
+    .toast .close{
+      pointer-events:auto;
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      cursor:pointer;
+      font-weight:900;
+    }
+
+    /* Footer nav */
+    .footer{
+      padding: 12px 16px;
+      border-top: 1px solid var(--stroke);
+      background: rgba(11,18,36,.75);
       display:flex;
       gap:10px;
-      align-items:center;
     }
-    .footer-actions .btn{
-      height:48px;
-      padding: 10px 14px;
-      min-width: 138px;
+    .footer button{
+      flex: 1;
+      padding: 12px 12px;
     }
-
-    /* bottom nav */
-    .nav{
-      position:absolute;
-      left:0; right:0; bottom:0;
-      height:84px;
-      background: var(--nav);
-      border-top: 1px solid rgba(226,232,240,.9);
-      display:flex;
-      justify-content:space-around;
-      align-items:center;
-      padding: 10px 14px 18px;
-      backdrop-filter: blur(10px);
-      z-index:2;
-    }
-    .tab{
-      width:62px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:6px;
-      color:#64748b;
-      font-size:11px;
-      font-weight:900;
-      position:relative;
-    }
-    .tab .ico{
-      width:44px; height:44px;
-      border-radius:999px;
-      display:grid; place-items:center;
-      background: #f8fafc;
-      border:1px solid rgba(226,232,240,.9);
-    }
-    .tab.active{ color:#0f172a; }
-    .tab.active .ico{ background:#0f172a10; border-color:#0f172a20; }
-
-    /* utility */
-    .hidden{ display:none !important; }
-    svg{ display:block; }
   </style>
 </head>
-
 <body>
-  <div class="phone" id="phone">
-    <div class="statusbar">
-      <div>9:41</div>
-      <div class="right">
-        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-        <span style="opacity:.9">Wi-Fi</span>
-        <span style="opacity:.9">🔋</span>
+  <div class="app" role="application" aria-label="Demo Indigo Toasts">
+    <div class="topbar">
+      <div class="title">
+        <strong id="topTitle">Nova sessão</strong>
+        <span id="topSub">Demo de feedback (rascunho / finalização)</span>
+      </div>
+
+      <div class="pill" id="netPill" title="Simulação de conectividade">
+        <span class="dot" id="netDot"></span>
+        <span id="netLabel">Conectado</span>
       </div>
     </div>
 
-    <div class="header">
-      <div class="header-top">
-        <div class="left">
-          <div class="back" aria-hidden="true" title="Voltar">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="title-wrap">
-            <div class="title">Nova Sessão</div>
-            <div class="subtitle">
-              <span>Arthur Pereira • 07 anos</span>
-              <span class="chip">Fono</span>
+    <div class="content">
+      <!-- SCREEN: REGISTRO -->
+      <section class="screen active" id="screen-registro">
+        <div class="card">
+          <h2 class="h1">Registro rápido</h2>
+          <p class="p">
+            Aqui é o “durante sessão”: foco no registro. As ações abaixo simulam
+            o que acontece quando o terapeuta decide <b>Salvar rascunho</b> ou <b>Finalizar</b>.
+          </p>
+
+          <div class="grid">
+            <div class="split">
+              <div>
+                <div style="font-weight:800; font-size:13px;">Sessão em andamento</div>
+                <small>Você pode registrar e sair rápido.</small>
+              </div>
+              <span class="badge draft" id="sessionStateBadge">EM REGISTRO</span>
+            </div>
+
+            <div class="split">
+              <div>
+                <div style="font-weight:800; font-size:13px;">Regras simuladas</div>
+                <small>Finalizar manda pra fila de sync.</small>
+              </div>
+              <small id="ruleHint">Sem validações aqui (é só demo).</small>
             </div>
           </div>
-        </div>
 
-        <div class="pill" id="connPill" title="Status de conexão">
-          <span class="p-dot"></span>
-          <span id="connText">Conectado</span>
-        </div>
-      </div>
-
-      <div class="stepper">
-        <div class="steps">
-          <div class="step-dot active" id="dot1">1</div>
-          <div class="step-dot" id="dot2">2</div>
-          <div class="step-dot" id="dot3">3</div>
-          <div class="step-label" id="stepLabel">Estímulos (tempo real)</div>
-        </div>
-        <div class="step-actions">
-          <button class="mini-btn" id="prevBtn" title="Etapa anterior" aria-label="Etapa anterior">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M15 18l-6-6 6-6" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <button class="mini-btn" id="nextBtn" title="Próxima etapa" aria-label="Próxima etapa">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M9 6l6 6-6 6" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="content" id="content">
-      <!-- STEP 1: Estímulos -->
-      <div id="step1">
-        <div class="panel">
-          <div class="panel-title">
-            <span>Contexto do programa</span>
-            <span class="badge ok">Ativo</span>
-          </div>
-          <div class="muted">
-            Programa: <b>Aprimoramento da linguagem oral</b><br/>
-            Data da sessão: <b>18/02/2026</b>
-          </div>
           <div class="row">
-            <div class="kv">Terapeuta: <b>Gúbio Santos</b></div>
-            <div class="kv">Prazo: <b>05/12/2025 — 05/06/2026</b></div>
+            <button class="primary" id="btnSalvarRascunho">Salvar rascunho</button>
+            <button class="primary" id="btnFinalizar">Finalizar sessão</button>
           </div>
 
-          <div class="collapse">
-            <div class="collapse-title">
-              <span>Ver objetivo do programa</span>
-              <span style="opacity:.7">▾</span>
-            </div>
-            <div class="collapse-body">
-              Ampliação da compreensão e expressão oral em situações do cotidiano.
-              <br/><br/>
-              <span class="muted">
-                (No app real, isso pode abrir um bottom sheet. Aqui é só visual.)
-              </span>
-            </div>
+          <div class="row" style="margin-top:16px;">
+            <button id="btnToggleOnline">Alternar Online/Offline</button>
+            <button class="danger" id="btnForceError">Simular erro de sync</button>
           </div>
+
+          <p class="p" style="margin-top:12px;">
+            Dica: salve rascunho e veja que vai pra Home; finalize e veja que abre Detalhes com status.
+          </p>
         </div>
+      </section>
 
-        <div class="panel">
-          <div class="panel-title">
-            <span>Estímulos em treino</span>
-            <span class="badge">4</span>
-          </div>
-          <div class="muted">Inicie um estímulo e registre em tempo real. Um estímulo ativo por vez.</div>
+      <!-- SCREEN: HOME -->
+      <section class="screen" id="screen-home">
+        <div class="card">
+          <h2 class="h1">Home</h2>
+          <p class="p">
+            Aqui você veria cards e alertas. Simulação abaixo:
+          </p>
 
-          <div class="stim-list" style="margin-top:12px;">
-            <div class="stim-card">
-              <div class="stim-top">
-                <div style="min-width:0;">
-                  <div class="stim-name">Compreensão de instruções simples em uma etapa</div>
-                  <div class="stim-sub">
-                    <span class="badge">Não iniciado</span>
-                    <span>Toque em “Iniciar”</span>
-                  </div>
-                </div>
-                <button class="btn primary" data-open-focus="1" type="button">
-                  <span class="circle" aria-hidden="true">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <path d="M8 5v14l11-7-11-7Z" fill="white"/>
-                    </svg>
-                  </span>
-                  Iniciar
-                </button>
+          <div class="grid">
+            <div class="split">
+              <div>
+                <div style="font-weight:800; font-size:13px;">Sessões pendentes</div>
+                <small id="pendingText">Nenhuma</small>
               </div>
+              <span class="badge draft" id="pendingBadge" style="display:none;">PENDENTE</span>
             </div>
 
-            <div class="stim-card">
-              <div class="stim-top">
-                <div style="min-width:0;">
-                  <div class="stim-name">Respostas a perguntas concretas sobre figuras</div>
-                  <div class="stim-sub">
-                    <span class="badge ok">Concluído</span>
-                    <span>ERRO 1 • AJUDA 2 • INDEP 6</span>
-                  </div>
-                </div>
-                <button class="btn ghost" type="button">
-                  Ver
-                </button>
+            <div class="split">
+              <div>
+                <div style="font-weight:800; font-size:13px;">Última ação</div>
+                <small id="lastAction">—</small>
               </div>
+              <button class="primary" id="btnAbrirSessao">Abrir sessão</button>
             </div>
+          </div>
+        </div>
+      </section>
 
-            <div class="stim-card">
-              <div class="stim-top">
-                <div style="min-width:0;">
-                  <div class="stim-name">Construção de frases simples a partir de figuras</div>
-                  <div class="stim-sub">
-                    <span class="badge">Não iniciado</span>
-                    <span>—</span>
-                  </div>
-                </div>
-                <button class="btn primary" data-open-focus="3" type="button">
-                  <span class="circle" aria-hidden="true">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <path d="M8 5v14l11-7-11-7Z" fill="white"/>
-                    </svg>
-                  </span>
-                  Iniciar
-                </button>
+      <!-- SCREEN: DETALHES -->
+      <section class="screen" id="screen-detalhes">
+        <div class="card">
+          <h2 class="h1">Detalhes da sessão</h2>
+          <p class="p">
+            Em vez de tela “🎉 sucesso”, você cai aqui e enxerga
+            <b>estado + sincronização</b>. Isso é o “profissional”.
+          </p>
+
+          <div class="grid" style="margin-top:14px;">
+            <div class="split">
+              <div>
+                <div style="font-weight:800; font-size:13px;">Status da sessão</div>
+                <small id="detailSessionState">Finalizada</small>
               </div>
+              <span class="badge final" id="detailStateBadge">FINALIZADA</span>
             </div>
 
-            <div class="stim-card">
-              <div class="stim-top">
-                <div style="min-width:0;">
-                  <div class="stim-name">Relato breve de rotina diária</div>
-                  <div class="stim-sub">
-                    <span class="badge warn">Pausado</span>
-                    <span>Retomar para finalizar</span>
-                  </div>
-                </div>
-                <button class="btn primary" data-open-focus="4" type="button">
-                  <span class="circle" aria-hidden="true">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <path d="M8 5v14l11-7-11-7Z" fill="white"/>
-                    </svg>
-                  </span>
-                  Retomar
-                </button>
+            <div class="split">
+              <div>
+                <div style="font-weight:800; font-size:13px;">Sincronização</div>
+                <small id="detailSyncText">—</small>
               </div>
+              <span class="badge ok" id="detailSyncBadge">OK</span>
+            </div>
+
+            <div class="split">
+              <div>
+                <div style="font-weight:800; font-size:13px;">Ação sugerida</div>
+                <small id="detailHint">—</small>
+              </div>
+              <button id="btnTentarSync" class="primary">Tentar sincronizar</button>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- STEP 2: Observações -->
-      <div id="step2" class="hidden">
-        <div class="panel">
-          <div class="panel-title">
-            <span>Observações da sessão</span>
-            <span class="badge">Opcional</span>
-          </div>
-          <div class="muted">Anotações e intercorrências. Use frases curtas (tempo real → seja objetivo).</div>
-          <div style="margin-top:12px;">
-            <textarea placeholder="Ex: Cliente demonstrou maior engajamento com reforçadores visuais. Dificuldade em manter foco após 15 minutos..."></textarea>
-            <div class="char">0/2000</div>
+          <div class="row" style="margin-top:14px;">
+            <button id="btnVoltarHome">Voltar para Home</button>
+            <button id="btnNovaSessao" class="primary">Nova sessão</button>
           </div>
         </div>
-
-        <div class="panel">
-          <div class="panel-title">
-            <span>Resumo rápido</span>
-            <span class="badge ok">Auto-save</span>
-          </div>
-          <div class="muted">
-            • Sessão está sendo salva localmente enquanto você preenche.<br/>
-            • Ao finalizar, vira <b>pendente de envio</b> se estiver sem internet.
-          </div>
-        </div>
-      </div>
-
-      <!-- STEP 3: Arquivos -->
-      <div id="step3" class="hidden">
-        <div class="panel">
-          <div class="panel-title">
-            <span>Arquivos da sessão</span>
-            <span class="badge warn">Cuidado offline</span>
-          </div>
-          <div class="muted">
-            Anexos aumentam complexidade offline. Se vocês vão manter no MVP,
-            o app precisa suportar fila de upload + retry.
-          </div>
-
-          <div class="drop">
-            Adicionar arquivo
-            <small>Imagens (JPG/PNG), Vídeos (MP4), Documentos (PDF)</small>
-          </div>
-
-          <div class="row" style="margin-top:12px;">
-            <span class="muted" style="font-weight:900;">Nenhum arquivo anexado</span>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-title">
-            <span>Finalização</span>
-            <span class="badge ok">Pronto</span>
-          </div>
-          <div class="muted">
-            Revise rapidamente e finalize a sessão.
-            Se offline, ela será salva e enviada quando houver conexão.
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
 
-    <!-- FOOTER ACTIONS -->
     <div class="footer">
-      <div class="footer-inner">
-        <div class="footer-note" id="footerNote">Salvo automaticamente (rascunho)</div>
-        <div class="footer-actions">
-          <button class="btn ghost" id="toggleConn" type="button" title="Simular offline/online">
-            Conexão
-          </button>
-          <button class="btn primary" id="finalizeBtn" type="button">
-            Finalizar sessão
-          </button>
-        </div>
-      </div>
+      <button id="navRegistro" class="primary">Registro</button>
+      <button id="navHome">Home</button>
+      <button id="navDetalhes">Detalhes</button>
     </div>
-
-    <!-- bottom nav (mantém padrão visual) -->
-    <div class="nav" role="navigation" aria-label="Navegação inferior">
-      <div class="tab">
-        <div class="ico" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10.5Z" stroke="#64748b" stroke-width="2" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div>Home</div>
-      </div>
-
-      <div class="tab active">
-        <div class="ico" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M16 21c0-3.314-2.686-6-6-6s-6 2.686-6 6" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
-            <path d="M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="#0f172a" stroke-width="2"/>
-            <path d="M20 21c0-2.2-1.2-4.1-3-5.1" stroke="#0f172a" stroke-width="2" stroke-linecap="round" opacity=".7"/>
-          </svg>
-        </div>
-        <div>Cliente</div>
-      </div>
-
-      <div class="tab">
-        <div class="ico" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M12 3v12" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
-            <path d="M7 10l5 5 5-5" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M5 21h14" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div>Envios</div>
-      </div>
-
-      <div class="tab">
-        <div class="ico" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M20 21a8 8 0 1 0-16 0" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
-            <path d="M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="#64748b" stroke-width="2"/>
-          </svg>
-        </div>
-        <div>Perfil</div>
-      </div>
-    </div>
-
-    <!-- ACTIVE STIMULUS OVERLAY (Focus Mode) -->
-    <div class="overlay" id="overlay">
-      <div class="focus">
-        <div class="focus-top">
-          <div style="min-width:0;">
-            <div class="focus-title" id="focusTitle">Compreensão de instruções simples em uma etapa</div>
-            <div class="focus-sub" id="focusSub">Toque nos botões para registrar em tempo real</div>
-          </div>
-          <div class="timer" id="timer">00:02:18</div>
-        </div>
-
-        <div class="counters">
-          <div class="counter err">
-            <div class="top">
-              <div class="label">ERRO</div>
-              <div style="opacity:.6; font-weight:900;">✕</div>
-            </div>
-            <div class="value" id="cErr">0</div>
-            <div class="hint">Resposta incorreta/sem resposta</div>
-          </div>
-
-          <div class="counter help">
-            <div class="top">
-              <div class="label">AJUDA</div>
-              <div style="opacity:.6; font-weight:900;">✋</div>
-            </div>
-            <div class="value" id="cHelp">0</div>
-            <div class="hint">Com pista ou dica</div>
-          </div>
-
-          <div class="counter ok">
-            <div class="top">
-              <div class="label">INDEP</div>
-              <div style="opacity:.6; font-weight:900;">✓</div>
-            </div>
-            <div class="value" id="cOk">0</div>
-            <div class="hint">Independente/correta</div>
-          </div>
-        </div>
-
-        <div class="panel" style="margin:0;">
-          <div class="panel-title">
-            <span>Ações rápidas</span>
-            <span class="badge ok">Auto-save</span>
-          </div>
-          <div class="muted">
-            No app real: toque rápido incrementa. Pressionar/arrastar para desfazer pode existir depois.
-            Aqui é só visual.
-          </div>
-          <div class="row" style="margin-top:12px;">
-            <button class="btn ghost" id="incErr" type="button">+ ERRO</button>
-            <button class="btn ghost" id="incHelp" type="button">+ AJUDA</button>
-            <button class="btn ghost" id="incOk" type="button">+ INDEP</button>
-          </div>
-        </div>
-
-        <div class="focus-actions">
-          <button class="btn pause" id="pauseBtn" type="button">Pausar</button>
-          <button class="btn finish" id="finishBtn" type="button">Finalizar bloco</button>
-        </div>
-
-        <button class="btn ghost" id="closeOverlay" type="button" style="width:100%; height:48px;">
-          Voltar para lista
-        </button>
-      </div>
-    </div>
-
   </div>
 
-  <script>
-    // Minimal JS só pra navegar entre etapas e abrir o modo foco.
-    // (Você pediu HTML/CSS, mas sem isso você não consegue "avançar entre etapas".)
+  <!-- Toast container -->
+  <div class="toast-wrap" aria-live="polite" aria-atomic="true">
+    <div class="toast" id="toast" role="status">
+      <div class="icon" id="toastIcon">✓</div>
+      <div class="body">
+        <strong id="toastTitle">—</strong>
+        <span id="toastMsg">—</span>
+      </div>
+      <div class="actions">
+        <button class="link" id="toastAction" style="display:none;">Ver</button>
+        <button class="close" id="toastClose" aria-label="Fechar">×</button>
+      </div>
+    </div>
+  </div>
 
-    const stepLabel = document.getElementById('stepLabel');
-    const step1 = document.getElementById('step1');
-    const step2 = document.getElementById('step2');
-    const step3 = document.getElementById('step3');
+<script>
+(() => {
+  // App state (simples)
+  const state = {
+    online: true,
+    pendingDraft: false,
+    sessionFinalized: false,
+    forceSyncError: false,
+    lastAction: "—",
+  };
 
-    const dot1 = document.getElementById('dot1');
-    const dot2 = document.getElementById('dot2');
-    const dot3 = document.getElementById('dot3');
+  // Elements
+  const screens = {
+    registro: document.getElementById("screen-registro"),
+    home: document.getElementById("screen-home"),
+    detalhes: document.getElementById("screen-detalhes"),
+  };
 
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
+  const topTitle = document.getElementById("topTitle");
+  const netDot = document.getElementById("netDot");
+  const netLabel = document.getElementById("netLabel");
 
-    let step = 1;
+  const pendingText = document.getElementById("pendingText");
+  const pendingBadge = document.getElementById("pendingBadge");
+  const lastAction = document.getElementById("lastAction");
 
-    function setStep(n){
-      step = Math.max(1, Math.min(3, n));
-      step1.classList.toggle('hidden', step !== 1);
-      step2.classList.toggle('hidden', step !== 2);
-      step3.classList.toggle('hidden', step !== 3);
+  const detailSyncText = document.getElementById("detailSyncText");
+  const detailSyncBadge = document.getElementById("detailSyncBadge");
+  const detailHint = document.getElementById("detailHint");
 
-      dot1.classList.toggle('active', step === 1);
-      dot2.classList.toggle('active', step === 2);
-      dot3.classList.toggle('active', step === 3);
+  // Toast
+  const toastEl = document.getElementById("toast");
+  const toastIcon = document.getElementById("toastIcon");
+  const toastTitle = document.getElementById("toastTitle");
+  const toastMsg = document.getElementById("toastMsg");
+  const toastClose = document.getElementById("toastClose");
+  const toastAction = document.getElementById("toastAction");
+  let toastTimer = null;
 
-      if(step === 1) stepLabel.textContent = 'Estímulos (tempo real)';
-      if(step === 2) stepLabel.textContent = 'Observações';
-      if(step === 3) stepLabel.textContent = 'Arquivos & Finalizar';
+  function setOnline(online) {
+    state.online = online;
+    netDot.classList.toggle("offline", !online);
+    netDot.classList.remove("error");
+    netLabel.textContent = online ? "Conectado" : "Offline";
+  }
+
+  function setNetError() {
+    netDot.classList.remove("offline");
+    netDot.classList.add("error");
+    netLabel.textContent = "Erro";
+  }
+
+  function showScreen(name) {
+    Object.values(screens).forEach(s => s.classList.remove("active"));
+    screens[name].classList.add("active");
+    topTitle.textContent =
+      name === "registro" ? "Nova sessão"
+      : name === "home" ? "Home"
+      : "Sessão";
+  }
+
+  function renderHome() {
+    pendingText.textContent = state.pendingDraft
+      ? "1 rascunho para concluir"
+      : "Nenhuma";
+    pendingBadge.style.display = state.pendingDraft ? "inline-flex" : "none";
+    lastAction.textContent = state.lastAction;
+  }
+
+  function renderDetalhes() {
+    // estado de sync
+    if (!state.sessionFinalized) {
+      detailSyncText.textContent = "—";
+      detailSyncBadge.textContent = "—";
+      detailSyncBadge.className = "badge";
+      detailHint.textContent = "Finalize uma sessão para ver o status aqui.";
+      return;
     }
 
-    prevBtn.addEventListener('click', () => setStep(step - 1));
-    nextBtn.addEventListener('click', () => setStep(step + 1));
-    setStep(1);
+    if (!state.online) {
+      detailSyncText.textContent = "Aguardando sincronização (offline)";
+      detailSyncBadge.textContent = "PENDENTE";
+      detailSyncBadge.className = "badge draft";
+      detailHint.textContent = "Conecte-se à internet para sincronizar.";
+      return;
+    }
 
-    // Focus overlay
-    const overlay = document.getElementById('overlay');
-    const closeOverlay = document.getElementById('closeOverlay');
-    const finishBtn = document.getElementById('finishBtn');
+    if (state.forceSyncError) {
+      detailSyncText.textContent = "Falha ao sincronizar";
+      detailSyncBadge.textContent = "ERRO";
+      detailSyncBadge.className = "badge";
+      detailSyncBadge.style.background = "rgba(239,68,68,.12)";
+      detailSyncBadge.style.borderColor = "rgba(239,68,68,.35)";
+      detailSyncBadge.style.color = "#fecaca";
+      detailHint.textContent = "Tente novamente. Se persistir, contate o suporte.";
+      return;
+    }
 
-    const focusTitle = document.getElementById('focusTitle');
+    detailSyncText.textContent = "Sincronizada com sucesso";
+    detailSyncBadge.textContent = "OK";
+    detailSyncBadge.className = "badge ok";
+    detailSyncBadge.style.background = "";
+    detailSyncBadge.style.borderColor = "";
+    detailSyncBadge.style.color = "";
+    detailHint.textContent = "Tudo certo. A sessão já entrou no fluxo.";
+  }
 
-    document.querySelectorAll('[data-open-focus]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.getAttribute('data-open-focus');
-        // só pra demonstrar
-        const titles = {
-          '1': 'Compreensão de instruções simples em uma etapa',
-          '3': 'Construção de frases simples a partir de figuras',
-          '4': 'Relato breve de rotina diária'
-        };
-        focusTitle.textContent = titles[id] || 'Estímulo';
-        overlay.classList.add('on');
+  function toast({ type="success", title, message, actionLabel, onAction, duration=2200 }) {
+    // reset action
+    toastAction.style.display = "none";
+    toastAction.onclick = null;
+
+    // icon
+    if (type === "success") toastIcon.textContent = "✓";
+    if (type === "info") toastIcon.textContent = "i";
+    if (type === "warning") toastIcon.textContent = "!";
+    if (type === "error") toastIcon.textContent = "×";
+
+    toastTitle.textContent = title;
+    toastMsg.textContent = message;
+
+    if (actionLabel && typeof onAction === "function") {
+      toastAction.style.display = "inline-flex";
+      toastAction.textContent = actionLabel;
+      toastAction.onclick = () => {
+        hideToast();
+        onAction();
+      };
+    }
+
+    // show
+    clearTimeout(toastTimer);
+    toastEl.classList.add("show");
+
+    // auto hide
+    toastTimer = setTimeout(hideToast, duration);
+  }
+
+  function hideToast() {
+    toastEl.classList.remove("show");
+    clearTimeout(toastTimer);
+    toastTimer = null;
+  }
+
+  toastClose.addEventListener("click", hideToast);
+
+  // Actions
+  function saveDraft() {
+    state.pendingDraft = true;
+    state.sessionFinalized = false;
+    state.lastAction = "Rascunho salvo";
+    toast({
+      type: "success",
+      title: "Rascunho salvo",
+      message: "Você pode concluir depois.",
+      duration: 2000,
+    });
+
+    // redireciona pra Home (sem tela de sucesso)
+    setTimeout(() => {
+      showScreen("home");
+      renderHome();
+    }, 350);
+  }
+
+  function finalizeSession() {
+    // finaliza e manda pra "detalhes"
+    state.pendingDraft = false;
+    state.sessionFinalized = true;
+    state.lastAction = "Sessão finalizada";
+
+    toast({
+      type: "success",
+      title: "Sessão finalizada",
+      message: state.online ? "Enviando para sincronização..." : "Aguardando sincronização (offline).",
+      actionLabel: "Ver",
+      onAction: () => { showScreen("detalhes"); renderDetalhes(); },
+      duration: 2400,
+    });
+
+    setTimeout(() => {
+      showScreen("detalhes");
+      renderDetalhes();
+      renderHome();
+    }, 350);
+  }
+
+  function trySync() {
+    if (!state.sessionFinalized) return;
+
+    if (!state.online) {
+      toast({
+        type: "warning",
+        title: "Sem conexão",
+        message: "Conecte-se para sincronizar.",
+        duration: 2400,
       });
-    });
-
-    closeOverlay.addEventListener('click', () => overlay.classList.remove('on'));
-    finishBtn.addEventListener('click', () => overlay.classList.remove('on'));
-
-    // counters demo
-    let e=0,h=0,o=0;
-    const cErr = document.getElementById('cErr');
-    const cHelp = document.getElementById('cHelp');
-    const cOk = document.getElementById('cOk');
-
-    document.getElementById('incErr').addEventListener('click', () => { e++; cErr.textContent = e; });
-    document.getElementById('incHelp').addEventListener('click', () => { h++; cHelp.textContent = h; });
-    document.getElementById('incOk').addEventListener('click', () => { o++; cOk.textContent = o; });
-
-    // offline/online toggle demo
-    const toggleConn = document.getElementById('toggleConn');
-    const connPill = document.getElementById('connPill');
-    const connText = document.getElementById('connText');
-    const footerNote = document.getElementById('footerNote');
-    const finalizeBtn = document.getElementById('finalizeBtn');
-
-    let online = true;
-    function setConn(isOnline){
-      online = isOnline;
-      connPill.classList.toggle('offline', !online);
-      connPill.classList.remove('error');
-      connText.textContent = online ? 'Conectado' : 'Sem internet';
-      footerNote.textContent = online ? 'Salvo automaticamente (rascunho)' : 'Offline: será enviado quando conectar';
-      finalizeBtn.textContent = online ? 'Finalizar sessão' : 'Salvar rascunho';
+      renderDetalhes();
+      return;
     }
-    toggleConn.addEventListener('click', () => setConn(!online));
-    setConn(true);
 
-    // pause demo
-    document.getElementById('pauseBtn').addEventListener('click', () => {
-      alert('Pausado (demo). No app real: marca bloco como PAUSADO e salva localmente.');
+    if (state.forceSyncError) {
+      toast({
+        type: "error",
+        title: "Falha na sincronização",
+        message: "Tente novamente em instantes.",
+        duration: 2600,
+      });
+      renderDetalhes();
+      return;
+    }
+
+    toast({
+      type: "success",
+      title: "Sincronizada",
+      message: "Sessão enviada com sucesso.",
+      duration: 2200,
     });
-  </script>
+    renderDetalhes();
+  }
+
+  // Buttons
+  document.getElementById("btnSalvarRascunho").addEventListener("click", saveDraft);
+  document.getElementById("btnFinalizar").addEventListener("click", finalizeSession);
+
+  document.getElementById("btnAbrirSessao").addEventListener("click", () => {
+    showScreen("registro");
+  });
+
+  document.getElementById("btnVoltarHome").addEventListener("click", () => {
+    showScreen("home");
+    renderHome();
+  });
+
+  document.getElementById("btnNovaSessao").addEventListener("click", () => {
+    // reset só para demo
+    state.pendingDraft = false;
+    state.sessionFinalized = false;
+    state.forceSyncError = false;
+    state.lastAction = "—";
+    setOnline(true);
+    showScreen("registro");
+    renderHome();
+    renderDetalhes();
+    toast({ type:"info", title:"Nova sessão", message:"Fluxo reiniciado.", duration: 1600 });
+  });
+
+  document.getElementById("btnTentarSync").addEventListener("click", trySync);
+
+  document.getElementById("btnToggleOnline").addEventListener("click", () => {
+    state.forceSyncError = false; // reset erro ao alternar
+    setOnline(!state.online);
+    renderDetalhes();
+    toast({
+      type: state.online ? "info" : "warning",
+      title: state.online ? "Conectado" : "Offline",
+      message: state.online ? "A sincronização pode ocorrer." : "Sessões ficarão pendentes.",
+      duration: 2000
+    });
+  });
+
+  document.getElementById("btnForceError").addEventListener("click", () => {
+    if (!state.sessionFinalized) {
+      toast({ type:"warning", title:"Nada para sincronizar", message:"Finalize uma sessão primeiro.", duration: 2200 });
+      return;
+    }
+    if (!state.online) {
+      toast({ type:"warning", title:"Offline", message:"Conecte-se para simular erro de sync.", duration: 2200 });
+      return;
+    }
+    state.forceSyncError = true;
+    setNetError();
+    renderDetalhes();
+    toast({ type:"error", title:"Erro simulado", message:"Sincronização falhou.", duration: 2400 });
+  });
+
+  // Footer nav
+  document.getElementById("navRegistro").addEventListener("click", () => showScreen("registro"));
+  document.getElementById("navHome").addEventListener("click", () => { showScreen("home"); renderHome(); });
+  document.getElementById("navDetalhes").addEventListener("click", () => { showScreen("detalhes"); renderDetalhes(); });
+
+  // init
+  setOnline(true);
+  renderHome();
+  renderDetalhes();
+})();
+</script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Plus } from 'lucide-react-native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { Alert, FlatList } from 'react-native';
 import { styled, Text, useTheme, XStack, YStack } from 'tamagui';
 
@@ -86,19 +86,16 @@ export default function ClientProgramsScreen() {
     setCurrentArea,
   } = useClientPrograms(id);
 
-  const [areaSheetOpen, setAreaSheetOpen] = useState(false);
-
   const handleBack = useCallback(() => {
     router.back();
   }, [router]);
 
-  const handleChangeArea = useCallback(() => {
-    // Mock: alterna para a próxima área disponível
-    if (areas.length <= 1) return;
-    const currentIndex = areas.indexOf(currentArea);
-    const nextIndex = (currentIndex + 1) % areas.length;
-    setCurrentArea(areas[nextIndex]);
-  }, [areas, currentArea, setCurrentArea]);
+  const handleSelectArea = useCallback(
+    (area: string) => {
+      setCurrentArea(area);
+    },
+    [setCurrentArea],
+  );
 
   const handleAddProgram = useCallback(() => {
     if (!isOnline) {
@@ -181,8 +178,8 @@ export default function ClientProgramsScreen() {
         isOnline={isOnline}
         onBack={handleBack}
         currentArea={currentArea}
-        hasMultipleAreas={areas.length > 1}
-        onChangeArea={handleChangeArea}
+        areas={areas}
+        onSelectArea={handleSelectArea}
       />
 
       <FlatList
@@ -191,7 +188,7 @@ export default function ClientProgramsScreen() {
         keyExtractor={keyExtractor}
         ListHeaderComponent={ListHeader}
         contentContainerStyle={{
-          paddingTop: 16,
+          paddingTop: 10,
           paddingHorizontal: 22,
           paddingBottom: 100,
           gap: 10,

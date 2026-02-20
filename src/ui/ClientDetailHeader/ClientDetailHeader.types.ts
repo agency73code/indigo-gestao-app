@@ -13,8 +13,8 @@ export interface ClientDetailHeaderProps {
   onBack: () => void;
   /** Área de atuação atual */
   currentArea?: string;
-  /** Se o cliente tem múltiplas áreas */
-  hasMultipleAreas?: boolean;
-  /** Callback ao trocar área */
-  onChangeArea?: () => void;
+  /** Lista de áreas disponíveis para o cliente */
+  areas?: string[];
+  /** Callback ao selecionar uma área */
+  onSelectArea?: (area: string) => void;
 }
