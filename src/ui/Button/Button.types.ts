@@ -1,5 +1,5 @@
 export type ButtonVariant = 'default' | 'outline' | 'secondary' | 'ghost' | 'destructive';
-export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonSize = 'sm' | 'md' | 'modal' | 'lg';
 
 export interface ButtonProps {
   /** Variante visual do botão */

@@ -191,6 +191,22 @@ export const lightTheme = {
   areaSelectorBg: WHITE,
   areaSelectorLabel: '#4B5563',
   areaSelectorBorder: '#A3ACB9',
+
+  /**
+   * ModalSheet & SelectItem:
+   * Bottom sheet modal com items selecionáveis.
+   */
+  modalGrabber: '#D9D9D9',
+  modalSeparator: '#D3D4D7',
+  selectDefaultBg: 'rgba(238,235,229,0.50)',
+  selectSelectedBg: 'rgba(0,122,255,0.05)',
+  selectSelectedBorder: '#0088FF',
+  radioDefault: '#D3D4D7',
+  radioSelectedBg: 'rgba(125,171,248,0.30)',
+  checkSelectedBg: 'rgba(125,171,248,0.20)',
+  checkIcon: WHITE,
+  accentBlue: '#007AFF',
+  modalOverlay: 'rgba(0,0,0,0.45)',
 };
 export const darkTheme: typeof lightTheme = {  /**
    * Se você ainda não desenhou dark no Figma,
@@ -292,6 +308,21 @@ export const darkTheme: typeof lightTheme = {  /**
   areaSelectorBg: '#0F1A2C',
   areaSelectorLabel: '#A8B3C2',
   areaSelectorBorder: '#2A3650',
+
+  /**
+   * ModalSheet & SelectItem:
+   */
+  modalGrabber: '#3A4050',
+  modalSeparator: '#2A3650',
+  selectDefaultBg: 'rgba(30,42,62,0.50)',
+  selectSelectedBg: 'rgba(90,128,162,0.10)',
+  selectSelectedBorder: '#5A80A2',
+  radioDefault: '#5A6575',
+  radioSelectedBg: 'rgba(90,128,162,0.30)',
+  checkSelectedBg: 'rgba(90,128,162,0.20)',
+  checkIcon: '#E6EEF7',
+  accentBlue: '#5A9FFF',
+  modalOverlay: 'rgba(0,0,0,0.65)',
 };
 
 export const themes = {

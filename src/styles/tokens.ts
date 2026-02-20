@@ -146,6 +146,7 @@ export const tokens = createTokens({
     8: 28,
     card: 24,
     list: 16,
+    select: 32,
     header: 45,
     pill: 9999,
   },

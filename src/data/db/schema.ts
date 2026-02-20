@@ -91,7 +91,10 @@ CREATE TABLE IF NOT EXISTS estimulo (
   server_id INTEGER UNIQUE,
 
   nome TEXT NOT NULL,
-  descricao TEXT
+  descricao TEXT,
+
+  created_at TEXT,
+  updated_at TEXT
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_estimulo_nome
@@ -110,6 +113,9 @@ CREATE TABLE IF NOT EXISTS estimulo_ocp (
   tecnicas_procedimentos TEXT,
 
   status INTEGER NOT NULL DEFAULT 1,
+
+  created_at TEXT,
+  updated_at TEXT,
 
   FOREIGN KEY (estimulo_id) REFERENCES estimulo(id),
   FOREIGN KEY (ocp_id) REFERENCES ocp(id)
@@ -169,6 +175,9 @@ CREATE TABLE IF NOT EXISTS sessao_trial (
   descricao_compensacao TEXT,
   participacao INTEGER,
   suporte INTEGER,
+
+  created_at TEXT,
+  updated_at TEXT,
 
   FOREIGN KEY (sessao_id) REFERENCES sessao(id),
   FOREIGN KEY (estimulo_ocp_id) REFERENCES estimulo_ocp(id)

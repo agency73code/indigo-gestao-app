@@ -1,8 +1,10 @@
-import { Check, ChevronDown } from 'lucide-react-native';
+import { ChevronDown } from 'lucide-react-native';
 import React, { memo, useCallback, useState } from 'react';
-import { Modal, Pressable } from 'react-native';
-import { styled, Text, useTheme, XStack, YStack } from 'tamagui';
+import { styled, Text, useTheme, XStack } from 'tamagui';
 
+import { Button } from '@/src/ui/Button';
+import { ModalSheet } from '@/src/ui/ModalSheet';
+import { SelectItem } from '@/src/ui/SelectItem';
 import { SpecialtyChip } from '@/src/ui/SpecialtyChip';
 
 import type { AreaSelectorBarProps } from './AreaSelectorBar.types';
@@ -11,8 +13,8 @@ import type { AreaSelectorBarProps } from './AreaSelectorBar.types';
 const CONTAINER_HEIGHT = 48;
 const CHANGE_BUTTON_HEIGHT = 27;
 const CHEVRON_SIZE = 14;
-const CHECK_SIZE = 16;
 const TODOS_LABEL = 'Todos';
+const MODAL_BUTTON_HEIGHT = 43;
 
 // ── Styled ───────────────────────────────────────────────────
 
@@ -61,49 +63,22 @@ const ChangeButtonText = styled(Text, {
   color: '$areaSelectorLabel',
 });
 
-const DropdownOverlay = styled(YStack, {
-  name: 'AreaDropdownOverlay',
-  flex: 1,
-  justifyContent: 'flex-end',
-  backgroundColor: 'rgba(0,0,0,0.25)',
-});
-
-const DropdownCard = styled(YStack, {
-  name: 'AreaDropdownCard',
-  backgroundColor: '$screenBackground',
-  borderTopLeftRadius: 20,
-  borderTopRightRadius: 20,
-  paddingTop: '$4',
-  paddingBottom: '$8',
-  paddingHorizontal: '$5',
-  gap: '$1',
-});
-
-const DropdownTitle = styled(Text, {
-  name: 'AreaDropdownTitle',
-  fontFamily: '$heading',
-  fontSize: 16,
-  fontWeight: '600',
-  color: '$sessionText',
-  paddingBottom: '$2',
-});
-
-const OptionRow = styled(XStack, {
-  name: 'AreaDropdownOption',
-  height: 48,
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  paddingHorizontal: '$3',
-  borderRadius: '$3',
-  pressStyle: { opacity: 0.7, backgroundColor: '$areaSelectorBg' },
-});
-
-const OptionText = styled(Text, {
-  name: 'AreaDropdownOptionText',
+const SectionLabel = styled(Text, {
+  name: 'AreaSectionLabel',
   fontFamily: '$body',
-  fontSize: 15,
-  fontWeight: '400',
-  color: '$sessionText',
+  fontSize: '$1', // 12
+  fontWeight: '700',
+  color: '$neutral800',
+  lineHeight: 16,
+  paddingTop: '$2', // 8
+  paddingBottom: '$1', // 4
+  paddingLeft: '$1', // 4 + 20 modal = ~24-25px total
+});
+
+const FooterRow = styled(XStack, {
+  name: 'AreaSelectorFooterRow',
+  flex: 1,
+  gap: '$3', // 12
 });
 
 // ── Component ────────────────────────────────────────────────
@@ -115,24 +90,41 @@ function AreaSelectorBarComponent({
 }: AreaSelectorBarProps) {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
+  const [tempSelection, setTempSelection] = useState(currentArea);
 
   const hasMultipleAreas = areas.length > 1;
-  const allOptions = [TODOS_LABEL, ...areas];
 
   const handleOpen = useCallback(() => {
+    setTempSelection(currentArea);
     setOpen(true);
-  }, []);
+  }, [currentArea]);
 
   const handleClose = useCallback(() => {
     setOpen(false);
   }, []);
 
-  const handleSelect = useCallback(
-    (area: string) => {
-      onSelectArea(area);
-      setOpen(false);
-    },
-    [onSelectArea],
+  const handleApply = useCallback(() => {
+    onSelectArea(tempSelection);
+    setOpen(false);
+  }, [onSelectArea, tempSelection]);
+
+  const footer = (
+    <FooterRow>
+      <Button
+        variant="secondary"
+        size="modal"
+        onPress={handleClose}
+      >
+        Cancelar
+      </Button>
+      <Button
+        variant="default"
+        size="modal"
+        onPress={handleApply}
+      >
+        Aplicar
+      </Button>
+    </FooterRow>
   );
 
   return (
@@ -161,43 +153,36 @@ function AreaSelectorBarComponent({
         )}
       </SelectorContainer>
 
-      <Modal
-        visible={open}
-        transparent
-        animationType="fade"
-        onRequestClose={handleClose}
+      <ModalSheet
+        isOpen={open}
+        onClose={handleClose}
+        title="Selecionar área"
+        subtitle="Escolha uma área para filtrar programas e sessões."
+        footer={footer}
       >
-        <Pressable onPress={handleClose} style={{ flex: 1 }}>
-          <DropdownOverlay>
-            <Pressable onPress={(e) => e.stopPropagation()}>
-              <DropdownCard>
-                <DropdownTitle>Selecionar área</DropdownTitle>
-                {allOptions.map((area) => (
-                  <OptionRow
-                    key={area}
-                    onPress={() => handleSelect(area)}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Selecionar ${area}`}
-                  >
-                    <OptionText
-                      fontWeight={area === currentArea ? '600' : '400'}
-                    >
-                      {area}
-                    </OptionText>
-                    {area === currentArea && (
-                      <Check
-                        size={CHECK_SIZE}
-                        color={theme.sessionText.val}
-                        strokeWidth={2.5}
-                      />
-                    )}
-                  </OptionRow>
-                ))}
-              </DropdownCard>
-            </Pressable>
-          </DropdownOverlay>
-        </Pressable>
-      </Modal>
+        {/* Seção: Filtro */}
+        <SectionLabel>Filtro</SectionLabel>
+        <SelectItem
+          title={TODOS_LABEL}
+          subtitle="Mostrar todas as áreas"
+          selected={tempSelection === TODOS_LABEL}
+          onPress={() => setTempSelection(TODOS_LABEL)}
+          type="radio"
+        />
+
+        {/* Seção: Áreas */}
+        <SectionLabel>Áreas</SectionLabel>
+        {areas.map((area) => (
+          <SelectItem
+            key={area}
+            title={area}
+            subtitle="Filtrar por especialidade"
+            selected={tempSelection === area}
+            onPress={() => setTempSelection(area)}
+            type="radio"
+          />
+        ))}
+      </ModalSheet>
     </>
   );
 }

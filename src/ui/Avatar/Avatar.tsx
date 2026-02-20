@@ -38,7 +38,7 @@ function AvatarComponent({
 }: AvatarProps) {
   const pixelSize = SIZE_MAP[size];
   const fontSize = FONT_SIZE_MAP[size];
-  const src = typeof source === 'string' ? source : undefined;
+  const src = typeof source === 'string' && source.length > 0 ? source : undefined;
 
   return (
     <TamaguiAvatar

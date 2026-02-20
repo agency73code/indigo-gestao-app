@@ -1,14 +1,14 @@
-import { getDb, initDb } from "@/src/data/db/initDb";
+import { clearDbResetFlag, getDb, initDb, wasDbReset } from "@/src/data/db/initDb";
 import { createHttpClient } from "@/src/features/auth/httpClient";
 import { useAuthStore } from "@/src/features/auth/store";
 import * as Crypto from "expo-crypto";
 import * as SecureStore from "expo-secure-store";
 import {
-    BaseResponse,
-    EstimulosResponse,
-    IdMaps,
-    ProgramasResponse,
-    SessoesResponse,
+  BaseResponse,
+  EstimulosResponse,
+  IdMaps,
+  ProgramasResponse,
+  SessoesResponse,
 } from "./mobileBootstrap.types";
 
 const httpClient = createHttpClient();
@@ -195,25 +195,6 @@ async function persistAll(
       const localId = createLocalId();
       maps.ocpServerToLocal.set(ocp.id, localId);
 
-      if (ocp.id === 9358017 /* ou compara pelo localId se preferir */) {
-        console.log("[OCP FAIL CANDIDATE]", {
-          ocpServerId: ocp.id,
-          clienteId: ocp.clienteId,
-          terapeutaId: ocp.terapeutaId,
-        });
-
-        const c = await db.getFirstAsync(
-          `SELECT id FROM cliente WHERE id = ? LIMIT 1;`,
-          [ocp.clienteId],
-        );
-        const t = await db.getFirstAsync(
-          `SELECT id FROM terapeuta WHERE id = ? LIMIT 1;`,
-          [ocp.terapeutaId],
-        );
-
-        console.log("[OCP FK EXISTS]", { cliente: !!c, terapeuta: !!t, c, t });
-      }
-
       await db.runAsync(
         `INSERT INTO ocp (
                     id,
@@ -251,12 +232,16 @@ async function persistAll(
                     id,
                     server_id,
                     nome,
-                    descricao
-                ) VALUES (?, ?, ?, ?);`,
+                    descricao,
+                    created_at,
+                    updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?);`,
         localId,
         estimulo.id,
         estimulo.nome,
         estimulo.descricao ?? null,
+        estimulo.criadoEm ?? null,
+        estimulo.atualizadoEm ?? null,
       );
     }
 
@@ -285,8 +270,10 @@ async function persistAll(
                     descricao,
                     metodos,
                     tecnicas_procedimentos,
-                    status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+                    status,
+                    created_at,
+                    updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
         localId,
         estimuloOcp.id,
         estimuloLocalId,
@@ -296,8 +283,8 @@ async function persistAll(
         estimuloOcp.metodos ?? null,
         estimuloOcp.tecnicasProcedimentos ?? null,
         toStatusFlag(estimuloOcp.status),
-        estimuloOcp.criadoEm,
-        estimuloOcp.atualizadoEm,
+        estimuloOcp.criadoEm ?? null,
+        estimuloOcp.atualizadoEm ?? null,
       );
     }
 
@@ -365,8 +352,10 @@ async function persistAll(
                     teve_compensacao,
                     descricao_compensacao,
                     participacao,
-                    suporte
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+                    suporte,
+                    created_at,
+                    updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
         createLocalId(),
         trial.id,
         sessaoLocalId,
@@ -382,8 +371,8 @@ async function persistAll(
         trial.descricaoCompensacao ?? null,
         trial.participacao ?? null,
         trial.suporte ?? null,
-        trial.criadoEm,
-        trial.atualizadoEm,
+        trial.criadoEm ?? null,
+        trial.atualizadoEm ?? null,
       );
     }
 
@@ -518,6 +507,14 @@ async function runBootstrapImpl(days = 30): Promise<void> {
   }
 
   const bootstrapKey = getBootstrapKey(therapistId);
+
+  // Se o banco foi recriado, limpa o flag de bootstrap para forçar re-download
+  if (wasDbReset()) {
+    await SecureStore.deleteItemAsync(bootstrapKey);
+    clearDbResetFlag();
+    console.log("[bootstrap] DB foi recriado — forçando re-download");
+  }
+
   const alreadyBootstrapped = await SecureStore.getItemAsync(bootstrapKey);
 
   if (alreadyBootstrapped === "1") {
@@ -550,6 +547,19 @@ export const mobileBootstrapService = {
       });
 
     return bootstrapPromise;
+  },
+
+  /**
+   * Reseta o flag de bootstrap para forçar re-download na próxima vez.
+   */
+  async resetBootstrapFlag(): Promise<void> {
+    const session = useAuthStore.getState().session;
+    const therapistId = session?.user?.id;
+    if (therapistId) {
+      const key = getBootstrapKey(therapistId);
+      await SecureStore.deleteItemAsync(key);
+      console.log("[bootstrap] flag resetado — próximo login fará download completo");
+    }
   },
 };
 

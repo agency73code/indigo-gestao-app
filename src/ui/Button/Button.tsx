@@ -13,7 +13,7 @@ const ButtonFrame = styled(XStack, {
   name: 'ButtonFrame',
   alignItems: 'center',
   justifyContent: 'center',
-  borderRadius: '$3',
+  borderRadius: '$pill',
   gap: '$2',
   cursor: 'pointer',
   pressStyle: { opacity: 0.85 },
@@ -26,7 +26,7 @@ const ButtonFrame = styled(XStack, {
         borderWidth: 1,
         borderColor: '$borderColor',
       },
-      secondary: { backgroundColor: '$secondary' },
+      secondary: { backgroundColor: '$selectDefaultBg' },
       ghost: {
         backgroundColor: 'transparent',
         pressStyle: { backgroundColor: '$backgroundPress' },
@@ -36,6 +36,7 @@ const ButtonFrame = styled(XStack, {
     size: {
       sm: { height: 32, paddingHorizontal: '$3' },
       md: { height: 40, paddingHorizontal: '$4' },
+      modal: { height: 43, paddingHorizontal: '$6', flex: 1 },
       lg: { height: 56, paddingHorizontal: '$6' },
     },
     disabled: {
@@ -58,13 +59,14 @@ const ButtonLabel = styled(Text, {
     variant: {
       default: { color: '$primaryForeground' },
       outline: { color: '$color' },
-      secondary: { color: '$secondaryForeground' },
+      secondary: { color: '$neutral800' },
       ghost: { color: '$primary' },
       destructive: { color: '$destructiveForeground' },
     },
     size: {
       sm: { fontSize: '$1' },  // 12
       md: { fontSize: '$2' },  // 14
+      modal: { fontSize: '$1' },  // 12
       lg: { fontSize: '$3' },  // 16
     },
   } as const,
