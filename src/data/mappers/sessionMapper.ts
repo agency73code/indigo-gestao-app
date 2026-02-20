@@ -1,48 +1,6 @@
 import { SessionItemData, SpecialtyKey } from "@/src/ui/SessionCard";
 import { SessionRecentRow } from "../models/sessionRecent.model";
-
-function getFallbackInitials(name: string): string {
-    const parts = name
-        .trim()
-        .split(/\s+/)
-        .filter(Boolean);
-
-    if (parts.length === 0) {
-        return '';
-    }
-
-    if (parts.length === 1) {
-        return parts[0].slice(0, 2).toUpperCase();
-    }
-
-    return `${parts[0][0] ?? ''}${parts[parts.length - 1][0] ?? ''}`.toUpperCase();
-}
-
-function getAgeLabelFromBirthDate(value: string | null): string {
-    if (!value) {
-        return '00 anos';
-    }
-
-    const birthDate = new Date(value);
-    if (Number.isNaN(birthDate.getTime())) {
-        return '00 anos';
-    }
-
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-
-    const hasHadBirthdayThisYear =
-        today.getMonth() > birthDate.getMonth() ||
-        (today.getMonth() === birthDate.getMonth() &&
-            today.getDate() >= birthDate.getDate());
-
-    if (!hasHadBirthdayThisYear) {
-        age -= 1;
-    }
-
-    const safeAge = age >= 0 ? age : 0;
-    return `${String(safeAge).padStart(2, '0')} anos`;
-}
+import { getAgeLabelFromBirthDate, getFallbackInitials } from "./mapperUtils";
 
 function toSpecialtyLabel(area: string | null): string {
     if (!area?.trim()) {
