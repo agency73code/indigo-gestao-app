@@ -1,7 +1,12 @@
 import { ClientItemData } from "@/src/ui/ClientCard";
 import { getDb } from "../db/initDb";
+import { ClientDetailRow } from "../models/clientDetail.model";
 import { ClientListRow } from "../models/clientList.model";
-import { mapClientRowsToClientItems } from "../mappers/clientMapper";
+import {
+  ClientDetailData,
+  mapClientDetailRowToClientData,
+  mapClientRowsToClientItems,
+} from "../mappers/clientMapper";
 
 async function getAll(): Promise<ClientItemData[]> {
     const db = await getDb();
@@ -22,6 +27,31 @@ async function getAll(): Promise<ClientItemData[]> {
     return mapClientRowsToClientItems(rows);
 }
 
+async function getById(clientId: string): Promise<ClientDetailData | null> {
+    const db = await getDb();
+
+    const row = await db.getFirstAsync<ClientDetailRow>(
+        `
+            SELECT
+                c.id,
+                c.nome,
+                c.data_nascimento,
+                c.avatar_url
+            FROM cliente c
+            WHERE c.id = ?
+            LIMIT 1;
+        `,
+        clientId,
+    );
+
+    if (!row) {
+        return null;
+    }
+
+    return mapClientDetailRowToClientData(row);
+}
+
 export const clientRepository = {
     getAll,
+    getById,
 }

@@ -1,21 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import {
-  MOCK_CLIENT_DETAIL,
-  MOCK_PROGRAMS,
-  type MockClientDetail,
-} from '@/src/features/client/mocks/clientPrograms.mock';
+import { clientRepository } from '@/src/data/repositories/clientRepository';
+import { programRepository } from '@/src/data/repositories/programRepository';
+import type { ClientDetailData } from '@/src/data/mappers/clientMapper';
 import type { ProgramItemData } from '@/src/ui/ProgramCard';
 
-/**
- * Flag para controlar uso de mock.
- * Trocar para `false` quando a API real estiver integrada.
- */
-const USE_MOCK = true;
 const TODOS_LABEL = 'Todos';
 
 interface UseClientProgramsReturn {
-  client: MockClientDetail | null;
+  client: ClientDetailData | null;
   programs: ProgramItemData[];
   currentArea: string;
   areas: string[];
@@ -25,51 +18,66 @@ interface UseClientProgramsReturn {
   refresh: () => void;
 }
 
-/**
- * Hook que fornece dados de um cliente + seus programas ativos filtrados por área.
- *
- * Quando `USE_MOCK = true`, retorna dados mockados.
- * Quando `USE_MOCK = false`, chamará o repository real (a implementar).
- *
- * Fluxo futuro: useClientPrograms → clientRepository.getById() + programRepository.getByClient() → SQLite
- */
-export function useClientPrograms(_clientId: string): UseClientProgramsReturn {
-  const [client, setClient] = useState<MockClientDetail | null>(null);
+export function useClientPrograms(clientId: string): UseClientProgramsReturn {
+  const [client, setClient] = useState<ClientDetailData | null>(null);
   const [allPrograms, setAllPrograms] = useState<Record<string, ProgramItemData[]>>({});
   const [currentArea, setCurrentArea] = useState(TODOS_LABEL);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = useCallback(() => {
+  const fetchData = useCallback(async () => {
+    if (!clientId) {
+      setClient(null);
+      setAllPrograms({});
+      setCurrentArea('');
+      setError('Cliente inválido');
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      if (USE_MOCK) {
-        setClient(MOCK_CLIENT_DETAIL);
-        setAllPrograms(MOCK_PROGRAMS);
-        setCurrentArea(TODOS_LABEL);
-        setLoading(false);
+      const [clientData, programsByArea] = await Promise.all([
+        clientRepository.getById(clientId),
+        programRepository.getByClient(clientId),
+      ]);
+
+      if (!clientData) {
+        setClient(null);
+        setAllPrograms({});
+        setCurrentArea('');
+        setError('Cliente não encontrado');
         return;
       }
 
-      // TODO: usar repository quando disponível
-      // const clientData = await clientRepository.getById(clientId);
-      // const programsData = await programRepository.getByClient(clientId);
-      setLoading(false);
+      setClient(clientData);
+      setAllPrograms(programsByArea);
+
+      const areasList = Object.keys(programsByArea);
+      setCurrentArea((previousArea) => {
+        if (previousArea && areasList.includes(previousArea)) {
+          return previousArea;
+        }
+
+        return areasList[0] ?? '';
+      });
     } catch (err) {
+      console.error('[useClientPrograms] fetchData error:', err);
       const message =
         err instanceof Error ? err.message : 'Erro ao carregar programas';
       setError(message);
+    } finally {
       setLoading(false);
     }
-  }, [_clientId]);
+  }, [clientId]);
 
   useEffect(() => {
-    fetchData();
+    void fetchData();
   }, [fetchData]);
 
-  const areas = useMemo(() => client?.areas ?? [], [client]);
+  const areas = useMemo(() => Object.keys(allPrograms), [allPrograms]);
 
   const programs = useMemo(() => {
     if (currentArea === TODOS_LABEL) {
@@ -86,6 +94,8 @@ export function useClientPrograms(_clientId: string): UseClientProgramsReturn {
     loading,
     error,
     setCurrentArea,
-    refresh: fetchData,
+    refresh: () => {
+      void fetchData();
+    },
   };
 }
